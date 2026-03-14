@@ -69,8 +69,9 @@ function selectAlgorithm(algo) {
     resetTimer();
     startTimer();
 
-    // Enable solution button
+    // Enable buttons
     document.getElementById('btn-solution').disabled = false;
+    document.getElementById('btn-reset-code').disabled = false;
 
     // Reset feedback
     showEmptyFeedback();
@@ -271,7 +272,7 @@ async function requestVerify() {
     const resultEl = document.getElementById('verify-result');
     resultEl.innerHTML = `<div class="loading-indicator">
         <div class="loading-dot"></div><div class="loading-dot"></div><div class="loading-dot"></div>
-        <span>AI가 코드를 검증하고 있습니다...</span>
+        <span>코드를 컴파일하고 테스트하고 있습니다...</span>
     </div>`;
     modal.classList.remove('hidden');
 
@@ -279,7 +280,7 @@ async function requestVerify() {
         const res = await fetch('/api/verify', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ algorithm: currentAlgo.name, code })
+            body: JSON.stringify({ algorithm: currentAlgo.name, algorithmId: currentAlgo.id, code })
         });
 
         if (!res.ok) throw new Error('API error');
@@ -305,35 +306,30 @@ function renderVerifyResult(data) {
 
     html += `<div class="verify-summary">${escapeHtml(data.summary)}</div>`;
 
-    if (data.complexity) {
-        html += `<div class="complexity-info">
-            <div><span>Time:</span><strong>${data.complexity.time || '-'}</strong></div>
-            <div><span>Space:</span><strong>${data.complexity.space || '-'}</strong></div>
-        </div>`;
+    if (data.compileError) {
+        html += `<div class="compile-error"><h3>컴파일 에러</h3><pre>${escapeHtml(data.compileError)}</pre></div>`;
     }
 
-    if (data.stl_violations && data.stl_violations.length > 0) {
-        html += `<div class="verify-section issues"><h3>STL 사용 위반</h3><ul>`;
-        data.stl_violations.forEach(v => html += `<li>${escapeHtml(v)}</li>`);
-        html += `</ul></div>`;
-    }
-
-    if (data.correctness_issues && data.correctness_issues.length > 0) {
-        html += `<div class="verify-section issues"><h3>정확성 문제</h3><ul>`;
-        data.correctness_issues.forEach(i => html += `<li>${escapeHtml(i)}</li>`);
-        html += `</ul></div>`;
-    }
-
-    if (data.edge_cases && data.edge_cases.length > 0) {
-        html += `<div class="verify-section warn"><h3>엣지 케이스</h3><ul>`;
-        data.edge_cases.forEach(e => html += `<li>${escapeHtml(e)}</li>`);
-        html += `</ul></div>`;
-    }
-
-    if (data.suggestions && data.suggestions.length > 0) {
-        html += `<div class="verify-section info"><h3>개선 제안</h3><ul>`;
-        data.suggestions.forEach(s => html += `<li>${escapeHtml(s)}</li>`);
-        html += `</ul></div>`;
+    if (data.testResults && data.testResults.length > 0) {
+        html += `<div class="test-results">`;
+        data.testResults.forEach(t => {
+            const icon = t.passed ? '✓' : '✗';
+            const cls = t.passed ? 'passed' : 'failed';
+            html += `<div class="test-case ${cls}">
+                <div class="test-case-header"><span class="test-icon">${icon}</span> ${escapeHtml(t.name)}</div>`;
+            if (!t.passed) {
+                if (t.error) {
+                    html += `<div class="test-diff"><pre>${escapeHtml(t.error)}</pre></div>`;
+                } else {
+                    html += `<div class="test-diff">
+                        <div><span class="diff-label">기대:</span><pre>${escapeHtml(t.expected)}</pre></div>
+                        <div><span class="diff-label">실제:</span><pre>${escapeHtml(t.actual || '(출력 없음)')}</pre></div>
+                    </div>`;
+                }
+            }
+            html += `</div>`;
+        });
+        html += `</div>`;
     }
 
     el.innerHTML = html;
@@ -375,6 +371,7 @@ function bindEvents() {
 
     document.getElementById('btn-verify').addEventListener('click', requestVerify);
     document.getElementById('btn-solution').addEventListener('click', showSolution);
+    document.getElementById('btn-reset-code').addEventListener('click', resetCode);
     document.getElementById('btn-reset-timer').addEventListener('click', () => {
         resetTimer();
         if (currentAlgo) startTimer();
@@ -408,6 +405,17 @@ function showSolution() {
     document.getElementById('solution-body').innerHTML =
         `<pre><code>${escapeHtml(currentAlgo.solution)}</code></pre>`;
     document.getElementById('solution-modal').classList.remove('hidden');
+}
+
+// ─── Reset Code ───
+function resetCode() {
+    if (!currentAlgo) return;
+    if (!confirm('코드를 초기화하시겠습니까? 현재 작성한 코드가 삭제됩니다.')) return;
+    localStorage.removeItem(`magnolia_code_${currentAlgo.id}`);
+    if (editor) {
+        editor.setValue(currentAlgo.skeleton);
+    }
+    showEmptyFeedback();
 }
 
 // ─── Utils ───

@@ -2,6 +2,10 @@ require('dotenv').config();
 const express = require('express');
 const Anthropic = require('@anthropic-ai/sdk');
 const path = require('path');
+const fs = require('fs');
+const os = require('os');
+const { execFile } = require('child_process');
+const { ALGORITHMS } = require('./public/algorithms.js');
 
 const app = express();
 app.use(express.json({ limit: '1mb' }));
@@ -30,27 +34,41 @@ Format your response as a JSON object:
   "hint": "next step hint (optional, short)"
 }`;
 
-const SYSTEM_PROMPT_VERIFY = `You are an expert competitive programming judge reviewing C++ algorithm implementations (No STL allowed).
+// ─── g++ compile & run helper ───
+function runCpp(source, timeout = 5000) {
+  return new Promise((resolve) => {
+    const id = `magnolia_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+    const tmpDir = os.tmpdir();
+    const cppPath = path.join(tmpDir, `${id}.cpp`);
+    const isWin = process.platform === 'win32';
+    const outPath = path.join(tmpDir, isWin ? `${id}.exe` : id);
 
-Your role in VERIFY MODE:
-- Thoroughly verify if the algorithm is correctly implemented
-- Check edge cases, correctness, time complexity, space complexity
-- Verify it matches the expected algorithm (not a different approach)
-- Check that NO STL containers or algorithms are used (no vector, map, set, sort, queue, priority_queue, etc.)
-- Basic I/O (printf, scanf, cout, cin) and cstring functions are allowed
-- Use Korean language for explanations
+    fs.writeFileSync(cppPath, source);
 
-Format your response as a JSON object:
-{
-  "correct": true | false,
-  "score": 0-100,
-  "summary": "Overall assessment in 1-2 sentences",
-  "correctness_issues": ["issue 1", ...] or [],
-  "stl_violations": ["violation 1", ...] or [],
-  "complexity": { "time": "O(...)", "space": "O(...)" },
-  "edge_cases": ["handled/missed edge case 1", ...],
-  "suggestions": ["improvement 1", ...] or []
-}`;
+    execFile('g++', ['-o', outPath, cppPath, '-std=c++17', '-O2'], { timeout: 10000 }, (compErr, _stdout, compStderr) => {
+      // cleanup cpp
+      try { fs.unlinkSync(cppPath); } catch {}
+
+      if (compErr) {
+        return resolve({ ok: false, stage: 'compile', error: compStderr || compErr.message });
+      }
+
+      execFile(outPath, [], { timeout }, (runErr, runStdout, runStderr) => {
+        // cleanup binary
+        try { fs.unlinkSync(outPath); } catch {}
+
+        if (runErr) {
+          if (runErr.killed) {
+            return resolve({ ok: false, stage: 'runtime', error: '시간 초과 (TLE)' });
+          }
+          return resolve({ ok: false, stage: 'runtime', error: runStderr || runErr.message });
+        }
+
+        resolve({ ok: true, stdout: runStdout });
+      });
+    });
+  });
+}
 
 app.post('/api/guide', async (req, res) => {
   const { algorithm, code } = req.body;
@@ -90,30 +108,57 @@ app.post('/api/guide', async (req, res) => {
 });
 
 app.post('/api/verify', async (req, res) => {
-  const { algorithm, code } = req.body;
+  const { algorithm, algorithmId, code } = req.body;
 
-  try {
-    const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
-      max_tokens: 2048,
-      system: SYSTEM_PROMPT_VERIFY,
-      messages: [{
-        role: 'user',
-        content: `Algorithm to verify: ${algorithm}\n\nSubmitted code:\n\`\`\`cpp\n${code}\n\`\`\``
-      }]
-    });
-
-    const text = message.content[0].text;
-    const jsonMatch = text.match(/\{[\s\S]*\}/);
-    if (jsonMatch) {
-      res.json(JSON.parse(jsonMatch[0]));
-    } else {
-      res.json({ correct: false, score: 0, summary: text, correctness_issues: [], stl_violations: [], complexity: {}, edge_cases: [], suggestions: [] });
-    }
-  } catch (err) {
-    console.error('Verify API error:', err.message);
-    res.status(500).json({ error: err.message });
+  const algo = ALGORITHMS.find(a => a.id === algorithmId || a.name === algorithm);
+  if (!algo || !algo.testCases || algo.testCases.length === 0) {
+    return res.status(400).json({ error: '해당 알고리즘의 테스트 케이스가 없습니다.' });
   }
+
+  const testResults = [];
+  let compileError = null;
+
+  for (const tc of algo.testCases) {
+    const source = tc.harness.replace('%USER_CODE%', code);
+    const result = await runCpp(source);
+
+    if (!result.ok) {
+      if (result.stage === 'compile') {
+        compileError = result.error;
+        break; // 컴파일 에러면 더 진행 불가
+      }
+      testResults.push({
+        name: tc.name,
+        passed: false,
+        expected: tc.expected.trim(),
+        actual: null,
+        error: result.error
+      });
+    } else {
+      const actual = result.stdout.trim();
+      const expected = tc.expected.trim();
+      testResults.push({
+        name: tc.name,
+        passed: actual === expected,
+        expected,
+        actual
+      });
+    }
+  }
+
+  const passed = testResults.filter(t => t.passed).length;
+  const total = algo.testCases.length;
+  const score = compileError ? 0 : Math.round((passed / total) * 100);
+
+  res.json({
+    correct: !compileError && passed === total,
+    score,
+    summary: compileError
+      ? '컴파일 에러'
+      : `${passed}/${total} 테스트 통과`,
+    compileError,
+    testResults
+  });
 });
 
 const PORT = process.env.PORT || 3000;

@@ -42,7 +42,29 @@ void mergeSort(int left, int right) {
     mergeSort(mid + 1, right);
     merge(left, mid, right);
 }`,
-    keywords: ['divide and conquer', 'stable sort', 'O(n log n)']
+    keywords: ['divide and conquer', 'stable sort', 'O(n log n)'],
+    testCases: [
+      {
+        name: "기본 정렬",
+        harness: `#include <cstdio>\n%USER_CODE%\nint main() {\n    n = 5;\n    int input[] = {5, 3, 1, 4, 2};\n    for (int i = 0; i < n; i++) arr[i] = input[i];\n    mergeSort(0, n - 1);\n    for (int i = 0; i < n; i++) { if (i) printf(" "); printf("%d", arr[i]); }\n    printf("\\n");\n    return 0;\n}`,
+        expected: "1 2 3 4 5\n"
+      },
+      {
+        name: "이미 정렬됨",
+        harness: `#include <cstdio>\n%USER_CODE%\nint main() {\n    n = 4;\n    int input[] = {1, 2, 3, 4};\n    for (int i = 0; i < n; i++) arr[i] = input[i];\n    mergeSort(0, n - 1);\n    for (int i = 0; i < n; i++) { if (i) printf(" "); printf("%d", arr[i]); }\n    printf("\\n");\n    return 0;\n}`,
+        expected: "1 2 3 4\n"
+      },
+      {
+        name: "역순 + 중복",
+        harness: `#include <cstdio>\n%USER_CODE%\nint main() {\n    n = 6;\n    int input[] = {5, 5, 3, 3, 1, 1};\n    for (int i = 0; i < n; i++) arr[i] = input[i];\n    mergeSort(0, n - 1);\n    for (int i = 0; i < n; i++) { if (i) printf(" "); printf("%d", arr[i]); }\n    printf("\\n");\n    return 0;\n}`,
+        expected: "1 1 3 3 5 5\n"
+      },
+      {
+        name: "단일 원소",
+        harness: `#include <cstdio>\n%USER_CODE%\nint main() {\n    n = 1;\n    arr[0] = 42;\n    mergeSort(0, 0);\n    printf("%d\\n", arr[0]);\n    return 0;\n}`,
+        expected: "42\n"
+      }
+    ]
   },
   {
     id: 'counting_sort',
@@ -94,7 +116,24 @@ void countingSort() {
     // 5) 복사
     for (int i = 0; i < n; i++) arr[i] = sorted[i];
 }`,
-    keywords: ['non-comparison sort', 'stable sort', 'O(n+k)', 'counting']
+    keywords: ['non-comparison sort', 'stable sort', 'O(n+k)', 'counting'],
+    testCases: [
+      {
+        name: "기본 정렬",
+        harness: `#include <cstdio>\n%USER_CODE%\nint main() {\n    n = 5;\n    int input[] = {4, 2, 0, 3, 1};\n    for (int i = 0; i < n; i++) arr[i] = input[i];\n    countingSort();\n    for (int i = 0; i < n; i++) { if (i) printf(" "); printf("%d", arr[i]); }\n    printf("\\n");\n    return 0;\n}`,
+        expected: "0 1 2 3 4\n"
+      },
+      {
+        name: "중복 값",
+        harness: `#include <cstdio>\n%USER_CODE%\nint main() {\n    n = 7;\n    int input[] = {3, 0, 3, 0, 1, 1, 2};\n    for (int i = 0; i < n; i++) arr[i] = input[i];\n    countingSort();\n    for (int i = 0; i < n; i++) { if (i) printf(" "); printf("%d", arr[i]); }\n    printf("\\n");\n    return 0;\n}`,
+        expected: "0 0 1 1 2 3 3\n"
+      },
+      {
+        name: "단일 원소",
+        harness: `#include <cstdio>\n%USER_CODE%\nint main() {\n    n = 1;\n    arr[0] = 5;\n    countingSort();\n    printf("%d\\n", arr[0]);\n    return 0;\n}`,
+        expected: "5\n"
+      }
+    ]
   },
   {
     id: 'heap',
@@ -162,7 +201,19 @@ struct MaxHeap {
         }
     }
 };`,
-    keywords: ['binary heap', 'complete binary tree', 'heapify']
+    keywords: ['binary heap', 'complete binary tree', 'heapify'],
+    testCases: [
+      {
+        name: "push/top/pop 기본",
+        harness: `#include <cstdio>\n%USER_CODE%\nint main() {\n    MaxHeap h;\n    h.init();\n    h.push(3); h.push(1); h.push(5); h.push(2);\n    printf("%d\\n", h.top());\n    h.pop();\n    printf("%d\\n", h.top());\n    h.pop();\n    printf("%d\\n", h.top());\n    return 0;\n}`,
+        expected: "5\n3\n2\n"
+      },
+      {
+        name: "순차 추출",
+        harness: `#include <cstdio>\n%USER_CODE%\nint main() {\n    MaxHeap h;\n    h.init();\n    int vals[] = {10, 4, 7, 1, 9, 3};\n    for (int i = 0; i < 6; i++) h.push(vals[i]);\n    while (h.sz > 0) { printf("%d ", h.top()); h.pop(); }\n    printf("\\n");\n    return 0;\n}`,
+        expected: "10 9 7 4 3 1 \n"
+      }
+    ]
   },
   {
     id: 'priority_queue',
@@ -232,7 +283,24 @@ struct PQ {
         }
     }
 };`,
-    keywords: ['min-heap', 'priority queue', 'Dijkstra']
+    keywords: ['min-heap', 'priority queue', 'Dijkstra'],
+    testCases: [
+      {
+        name: "최솟값 추출",
+        harness: `#include <cstdio>\n%USER_CODE%\nint main() {\n    PQ pq;\n    pq.init();\n    pq.push(5); pq.push(1); pq.push(3); pq.push(2);\n    printf("%d\\n", pq.top());\n    pq.pop();\n    printf("%d\\n", pq.top());\n    pq.pop();\n    printf("%d\\n", pq.top());\n    return 0;\n}`,
+        expected: "1\n2\n3\n"
+      },
+      {
+        name: "empty 체크",
+        harness: `#include <cstdio>\n%USER_CODE%\nint main() {\n    PQ pq;\n    pq.init();\n    printf("%d\\n", pq.empty());\n    pq.push(10);\n    printf("%d\\n", pq.empty());\n    pq.pop();\n    printf("%d\\n", pq.empty());\n    return 0;\n}`,
+        expected: "1\n0\n1\n"
+      },
+      {
+        name: "순차 추출",
+        harness: `#include <cstdio>\n%USER_CODE%\nint main() {\n    PQ pq;\n    pq.init();\n    int vals[] = {9, 1, 7, 3, 5};\n    for (int i = 0; i < 5; i++) pq.push(vals[i]);\n    while (!pq.empty()) { printf("%d ", pq.top()); pq.pop(); }\n    printf("\\n");\n    return 0;\n}`,
+        expected: "1 3 5 7 9 \n"
+      }
+    ]
   },
   {
     id: 'lazy_segment_tree',
@@ -332,7 +400,19 @@ struct LazySegTree {
              + query(2 * node + 1, mid + 1, end, l, r);
     }
 };`,
-    keywords: ['segment tree', 'lazy propagation', 'range query', 'range update']
+    keywords: ['segment tree', 'lazy propagation', 'range query', 'range update'],
+    testCases: [
+      {
+        name: "구간 합 + 업데이트",
+        harness: `#include <cstdio>\n%USER_CODE%\nint main() {\n    LazySegTree seg;\n    int a[] = {1, 2, 3, 4, 5};\n    seg.init(5);\n    seg.build(1, 0, 4, a);\n    printf("%lld\\n", seg.query(1, 0, 4, 0, 4));\n    printf("%lld\\n", seg.query(1, 0, 4, 1, 3));\n    seg.update(1, 0, 4, 1, 3, 10);\n    printf("%lld\\n", seg.query(1, 0, 4, 0, 4));\n    printf("%lld\\n", seg.query(1, 0, 4, 2, 2));\n    return 0;\n}`,
+        expected: "15\n9\n45\n13\n"
+      },
+      {
+        name: "전체 구간 업데이트",
+        harness: `#include <cstdio>\n%USER_CODE%\nint main() {\n    LazySegTree seg;\n    int a[] = {0, 0, 0};\n    seg.init(3);\n    seg.build(1, 0, 2, a);\n    seg.update(1, 0, 2, 0, 2, 5);\n    printf("%lld\\n", seg.query(1, 0, 2, 0, 2));\n    seg.update(1, 0, 2, 0, 0, 3);\n    printf("%lld\\n", seg.query(1, 0, 2, 0, 0));\n    return 0;\n}`,
+        expected: "15\n8\n"
+      }
+    ]
   },
   {
     id: 'nn_chain_knn',
@@ -541,7 +621,19 @@ void nnChain() {
         }
     }
 }`,
-    keywords: ['KNN', 'K-nearest neighbors', 'hierarchical clustering', 'NN chain', 'Ward linkage', 'max-heap']
+    keywords: ['KNN', 'K-nearest neighbors', 'hierarchical clustering', 'NN chain', 'Ward linkage', 'max-heap'],
+    testCases: [
+      {
+        name: "3점 군집화",
+        harness: `#include <cstdio>\n%USER_CODE%\nint main() {\n    n = 3; K = 2;\n    px[0]=0; py[0]=0; px[1]=1; py[1]=0; px[2]=10; py[2]=0;\n    nnChain();\n    printf("%d\\n", mergeCnt);\n    return 0;\n}`,
+        expected: "2\n"
+      },
+      {
+        name: "4점 군집화",
+        harness: `#include <cstdio>\n%USER_CODE%\nint main() {\n    n = 4; K = 3;\n    px[0]=0; py[0]=0; px[1]=1; py[1]=0; px[2]=10; py[2]=0; px[3]=11; py[3]=0;\n    nnChain();\n    printf("%d\\n", mergeCnt);\n    return 0;\n}`,
+        expected: "3\n"
+      }
+    ]
   },
   {
     id: 'two_opt',
@@ -634,7 +726,19 @@ bool twoOptStep() {
 void twoOpt() {
     while (twoOptStep());
 }`,
-    keywords: ['TSP', 'local search', 'tour improvement']
+    keywords: ['TSP', 'local search', 'tour improvement'],
+    testCases: [
+      {
+        name: "사각형 경로 개선",
+        harness: `#include <cstdio>\n%USER_CODE%\nint main() {\n    n = 4;\n    x[0]=0; y[0]=0; x[1]=1; y[1]=0; x[2]=0; y[2]=1; x[3]=1; y[3]=1;\n    tour[0]=0; tour[1]=2; tour[2]=1; tour[3]=3;\n    double before = tourLength();\n    twoOpt();\n    double after = tourLength();\n    printf("%s\\n", after <= before ? "OK" : "FAIL");\n    return 0;\n}`,
+        expected: "OK\n"
+      },
+      {
+        name: "이미 최적",
+        harness: `#include <cstdio>\n%USER_CODE%\nint main() {\n    n = 3;\n    x[0]=0; y[0]=0; x[1]=1; y[1]=0; x[2]=0.5; y[2]=1;\n    tour[0]=0; tour[1]=1; tour[2]=2;\n    double before = tourLength();\n    twoOpt();\n    double after = tourLength();\n    double diff = before - after;\n    if (diff < 0) diff = -diff;\n    printf("%s\\n", diff < 1e-6 ? "OK" : "FAIL");\n    return 0;\n}`,
+        expected: "OK\n"
+      }
+    ]
   },
   {
     id: 'dijkstra',
@@ -701,7 +805,7 @@ void addEdge(int u, int v, int w) {
     head[u] = edgeCnt++;
 }
 
-int dist_[MAXN];
+int dist[MAXN];
 bool visited[MAXN];
 
 struct Node { int v, d; };
@@ -735,8 +839,8 @@ Node heapPop() {
 }
 
 void dijkstra(int src, int n) {
-    for (int i = 0; i < n; i++) { dist_[i] = INF; visited[i] = false; }
-    dist_[src] = 0;
+    for (int i = 0; i < n; i++) { dist[i] = INF; visited[i] = false; }
+    dist[src] = 0;
     heapSz = 0;
     heapPush(src, 0);
 
@@ -747,14 +851,31 @@ void dijkstra(int src, int n) {
 
         for (int e = head[cur.v]; e != -1; e = edges[e].next) {
             int nv = edges[e].to, nw = cur.d + edges[e].w;
-            if (nw < dist_[nv]) {
-                dist_[nv] = nw;
+            if (nw < dist[nv]) {
+                dist[nv] = nw;
                 heapPush(nv, nw);
             }
         }
     }
 }`,
-    keywords: ['shortest path', 'min-heap', 'greedy']
+    keywords: ['shortest path', 'min-heap', 'greedy'],
+    testCases: [
+      {
+        name: "기본 그래프",
+        harness: `#include <cstdio>\n%USER_CODE%\nint main() {\n    initGraph();\n    addEdge(0,1,4); addEdge(0,2,1); addEdge(2,1,2); addEdge(1,3,1); addEdge(2,3,5);\n    dijkstra(0, 4);\n    for (int i = 0; i < 4; i++) { if (i) printf(" "); printf("%d", dist[i]); }\n    printf("\\n");\n    return 0;\n}`,
+        expected: "0 3 1 4\n"
+      },
+      {
+        name: "단일 정점",
+        harness: `#include <cstdio>\n%USER_CODE%\nint main() {\n    initGraph();\n    dijkstra(0, 1);\n    printf("%d\\n", dist[0]);\n    return 0;\n}`,
+        expected: "0\n"
+      },
+      {
+        name: "도달 불가",
+        harness: `#include <cstdio>\n%USER_CODE%\nint main() {\n    initGraph();\n    addEdge(0,1,3);\n    dijkstra(0, 3);\n    printf("%d %d %d\\n", dist[0], dist[1], dist[2] >= 0x3f3f3f3f ? -1 : dist[2]);\n    return 0;\n}`,
+        expected: "0 3 -1\n"
+      }
+    ]
   },
   {
     id: 'quick_sort',
@@ -815,7 +936,24 @@ void quickSort(int left, int right) {
     quickSort(left, p - 1);
     quickSort(p + 1, right);
 }`,
-    keywords: ['partition', 'in-place sort', 'divide and conquer']
+    keywords: ['partition', 'in-place sort', 'divide and conquer'],
+    testCases: [
+      {
+        name: "기본 정렬",
+        harness: `#include <cstdio>\n%USER_CODE%\nint main() {\n    n = 6;\n    int input[] = {3, 6, 1, 5, 2, 4};\n    for (int i = 0; i < n; i++) arr[i] = input[i];\n    quickSort(0, n - 1);\n    for (int i = 0; i < n; i++) { if (i) printf(" "); printf("%d", arr[i]); }\n    printf("\\n");\n    return 0;\n}`,
+        expected: "1 2 3 4 5 6\n"
+      },
+      {
+        name: "중복 포함",
+        harness: `#include <cstdio>\n%USER_CODE%\nint main() {\n    n = 5;\n    int input[] = {2, 2, 1, 1, 3};\n    for (int i = 0; i < n; i++) arr[i] = input[i];\n    quickSort(0, n - 1);\n    for (int i = 0; i < n; i++) { if (i) printf(" "); printf("%d", arr[i]); }\n    printf("\\n");\n    return 0;\n}`,
+        expected: "1 1 2 2 3\n"
+      },
+      {
+        name: "역순 정렬",
+        harness: `#include <cstdio>\n%USER_CODE%\nint main() {\n    n = 4;\n    int input[] = {4, 3, 2, 1};\n    for (int i = 0; i < n; i++) arr[i] = input[i];\n    quickSort(0, n - 1);\n    for (int i = 0; i < n; i++) { if (i) printf(" "); printf("%d", arr[i]); }\n    printf("\\n");\n    return 0;\n}`,
+        expected: "1 2 3 4\n"
+      }
+    ]
   },
   {
     id: 'union_find',
@@ -878,7 +1016,24 @@ bool unite(int a, int b) {
 bool sameSet(int a, int b) {
     return find(a) == find(b);
 }`,
-    keywords: ['disjoint set', 'path compression', 'union by rank']
+    keywords: ['disjoint set', 'path compression', 'union by rank'],
+    testCases: [
+      {
+        name: "기본 연산",
+        harness: `#include <cstdio>\n%USER_CODE%\nint main() {\n    init(5);\n    printf("%d\\n", sameSet(0, 1));\n    unite(0, 1);\n    printf("%d\\n", sameSet(0, 1));\n    unite(2, 3);\n    printf("%d\\n", sameSet(0, 3));\n    unite(1, 3);\n    printf("%d\\n", sameSet(0, 3));\n    return 0;\n}`,
+        expected: "0\n1\n0\n1\n"
+      },
+      {
+        name: "중복 unite",
+        harness: `#include <cstdio>\n%USER_CODE%\nint main() {\n    init(3);\n    printf("%d\\n", unite(0, 1));\n    printf("%d\\n", unite(0, 1));\n    printf("%d\\n", unite(1, 0));\n    return 0;\n}`,
+        expected: "1\n0\n0\n"
+      },
+      {
+        name: "경로 압축 확인",
+        harness: `#include <cstdio>\n%USER_CODE%\nint main() {\n    init(5);\n    unite(0,1); unite(1,2); unite(2,3); unite(3,4);\n    int r = find(4);\n    printf("%d\\n", find(0) == r);\n    printf("%d\\n", find(2) == r);\n    return 0;\n}`,
+        expected: "1\n1\n"
+      }
+    ]
   },
   {
     id: 'kruskal',
@@ -978,7 +1133,24 @@ long long kruskal(int n) {
     }
     return mst;
 }`,
-    keywords: ['MST', 'union-find', 'greedy', 'edge sort']
+    keywords: ['MST', 'union-find', 'greedy', 'edge sort'],
+    testCases: [
+      {
+        name: "기본 MST",
+        harness: `#include <cstdio>\n%USER_CODE%\nint main() {\n    edgeCnt = 0;\n    edges[edgeCnt++] = {0,1,4};\n    edges[edgeCnt++] = {0,2,1};\n    edges[edgeCnt++] = {1,2,2};\n    edges[edgeCnt++] = {1,3,5};\n    edges[edgeCnt++] = {2,3,3};\n    printf("%lld\\n", kruskal(4));\n    return 0;\n}`,
+        expected: "6\n"
+      },
+      {
+        name: "단일 간선",
+        harness: `#include <cstdio>\n%USER_CODE%\nint main() {\n    edgeCnt = 0;\n    edges[edgeCnt++] = {0,1,7};\n    printf("%lld\\n", kruskal(2));\n    return 0;\n}`,
+        expected: "7\n"
+      },
+      {
+        name: "삼각형 그래프",
+        harness: `#include <cstdio>\n%USER_CODE%\nint main() {\n    edgeCnt = 0;\n    edges[edgeCnt++] = {0,1,1};\n    edges[edgeCnt++] = {1,2,2};\n    edges[edgeCnt++] = {0,2,3};\n    printf("%lld\\n", kruskal(3));\n    return 0;\n}`,
+        expected: "3\n"
+      }
+    ]
   },
   {
     id: 'bfs',
@@ -1051,7 +1223,24 @@ void bfs(int src, int n) {
         }
     }
 }`,
-    keywords: ['breadth-first search', 'queue', 'shortest path unweighted']
+    keywords: ['breadth-first search', 'queue', 'shortest path unweighted'],
+    testCases: [
+      {
+        name: "기본 BFS",
+        harness: `#include <cstdio>\n%USER_CODE%\nint main() {\n    initGraph();\n    addEdge(0,1); addEdge(1,0); addEdge(0,2); addEdge(2,0);\n    addEdge(1,3); addEdge(3,1); addEdge(2,3); addEdge(3,2);\n    bfs(0, 4);\n    for (int i = 0; i < 4; i++) { if (i) printf(" "); printf("%d", dist[i]); }\n    printf("\\n");\n    return 0;\n}`,
+        expected: "0 1 1 2\n"
+      },
+      {
+        name: "도달 불가",
+        harness: `#include <cstdio>\n%USER_CODE%\nint main() {\n    initGraph();\n    addEdge(0,1); addEdge(1,0);\n    bfs(0, 3);\n    printf("%d %d %d\\n", dist[0], dist[1], dist[2]);\n    return 0;\n}`,
+        expected: "0 1 -1\n"
+      },
+      {
+        name: "선형 그래프",
+        harness: `#include <cstdio>\n%USER_CODE%\nint main() {\n    initGraph();\n    addEdge(0,1); addEdge(1,2); addEdge(2,3); addEdge(3,4);\n    bfs(0, 5);\n    for (int i = 0; i < 5; i++) { if (i) printf(" "); printf("%d", dist[i]); }\n    printf("\\n");\n    return 0;\n}`,
+        expected: "0 1 2 3 4\n"
+      }
+    ]
   },
   {
     id: 'topo_sort',
@@ -1123,7 +1312,19 @@ bool topoSort(int n) {
     }
     return cnt == n; // false면 사이클 존재
 }`,
-    keywords: ['topological order', 'DAG', 'Kahn algorithm', 'in-degree']
+    keywords: ['topological order', 'DAG', 'Kahn algorithm', 'in-degree'],
+    testCases: [
+      {
+        name: "기본 DAG",
+        harness: `#include <cstdio>\n%USER_CODE%\nint main() {\n    initGraph();\n    addEdge(0,1); addEdge(0,2); addEdge(1,3); addEdge(2,3);\n    bool ok = topoSort(4);\n    printf("%d\\n", ok);\n    // result에서 0이 3보다 먼저 나와야 함\n    int pos[4];\n    for (int i = 0; i < 4; i++) pos[result[i]] = i;\n    printf("%d\\n", pos[0] < pos[3]);\n    printf("%d\\n", pos[1] < pos[3]);\n    return 0;\n}`,
+        expected: "1\n1\n1\n"
+      },
+      {
+        name: "사이클 감지",
+        harness: `#include <cstdio>\n%USER_CODE%\nint main() {\n    initGraph();\n    addEdge(0,1); addEdge(1,2); addEdge(2,0);\n    bool ok = topoSort(3);\n    printf("%d\\n", ok);\n    return 0;\n}`,
+        expected: "0\n"
+      }
+    ]
   },
   {
     id: 'lca_binary_lifting',
@@ -1233,7 +1434,19 @@ int lca(int u, int v) {
     }
     return up[u][0];
 }`,
-    keywords: ['lowest common ancestor', 'binary lifting', 'sparse table']
+    keywords: ['lowest common ancestor', 'binary lifting', 'sparse table'],
+    testCases: [
+      {
+        name: "기본 트리 LCA",
+        harness: `#include <cstdio>\n%USER_CODE%\nint main() {\n    initGraph();\n    addEdge(0,1); addEdge(1,0);\n    addEdge(0,2); addEdge(2,0);\n    addEdge(1,3); addEdge(3,1);\n    addEdge(1,4); addEdge(4,1);\n    addEdge(2,5); addEdge(5,2);\n    preprocess(0);\n    printf("%d\\n", lca(3, 4));\n    printf("%d\\n", lca(3, 5));\n    printf("%d\\n", lca(4, 5));\n    return 0;\n}`,
+        expected: "1\n0\n0\n"
+      },
+      {
+        name: "직선 트리",
+        harness: `#include <cstdio>\n%USER_CODE%\nint main() {\n    initGraph();\n    for (int i = 0; i < 4; i++) { addEdge(i, i+1); addEdge(i+1, i); }\n    preprocess(0);\n    printf("%d\\n", lca(0, 4));\n    printf("%d\\n", lca(2, 4));\n    printf("%d\\n", lca(3, 3));\n    return 0;\n}`,
+        expected: "0\n2\n3\n"
+      }
+    ]
   },
   {
     id: 'fenwick_tree',
@@ -1298,7 +1511,19 @@ struct BIT {
         return query(r) - query(l - 1);
     }
 };`,
-    keywords: ['BIT', 'binary indexed tree', 'prefix sum', 'point update']
+    keywords: ['BIT', 'binary indexed tree', 'prefix sum', 'point update'],
+    testCases: [
+      {
+        name: "점 업데이트 + 구간 쿼리",
+        harness: `#include <cstdio>\n%USER_CODE%\nint main() {\n    BIT bit;\n    bit.init(5);\n    bit.update(1, 3); bit.update(2, 5); bit.update(3, 7); bit.update(4, 1); bit.update(5, 4);\n    printf("%lld\\n", bit.query(5));\n    printf("%lld\\n", bit.query(3));\n    printf("%lld\\n", bit.rangeQuery(2, 4));\n    bit.update(3, -2);\n    printf("%lld\\n", bit.rangeQuery(1, 5));\n    return 0;\n}`,
+        expected: "20\n15\n13\n18\n"
+      },
+      {
+        name: "단일 원소",
+        harness: `#include <cstdio>\n%USER_CODE%\nint main() {\n    BIT bit;\n    bit.init(1);\n    bit.update(1, 10);\n    printf("%lld\\n", bit.query(1));\n    printf("%lld\\n", bit.rangeQuery(1, 1));\n    return 0;\n}`,
+        expected: "10\n10\n"
+      }
+    ]
   },
   {
     id: 'hash_map',
@@ -1397,7 +1622,19 @@ bool erase(int key) {
     }
     return false;
 }`,
-    keywords: ['hash table', 'chaining', 'hash function']
+    keywords: ['hash table', 'chaining', 'hash function'],
+    testCases: [
+      {
+        name: "insert/find/erase",
+        harness: `#include <cstdio>\n%USER_CODE%\nint main() {\n    init();\n    insert(10, 100); insert(20, 200); insert(30, 300);\n    printf("%d\\n", find(10));\n    printf("%d\\n", find(20));\n    printf("%d\\n", find(99));\n    erase(20);\n    printf("%d\\n", find(20));\n    insert(10, 999);\n    printf("%d\\n", find(10));\n    return 0;\n}`,
+        expected: "100\n200\n-1\n-1\n999\n"
+      },
+      {
+        name: "해시 충돌 (음수키)",
+        harness: `#include <cstdio>\n%USER_CODE%\nint main() {\n    init();\n    insert(-5, 50); insert(-100003, 60);\n    printf("%d\\n", find(-5));\n    printf("%d\\n", find(-100003));\n    erase(-5);\n    printf("%d\\n", find(-5));\n    printf("%d\\n", find(-100003));\n    return 0;\n}`,
+        expected: "50\n60\n-1\n60\n"
+      }
+    ]
   },
   {
     id: 'scc_tarjan',
@@ -1494,7 +1731,24 @@ void findSCC(int n) {
         if (!dfn[i]) tarjan(i);
     }
 }`,
-    keywords: ['strongly connected components', 'Tarjan', 'DFS', 'low-link']
+    keywords: ['strongly connected components', 'Tarjan', 'DFS', 'low-link'],
+    testCases: [
+      {
+        name: "기본 SCC",
+        harness: `#include <cstdio>\n%USER_CODE%\nint main() {\n    initGraph();\n    addEdge(0,1); addEdge(1,2); addEdge(2,0); addEdge(2,3);\n    findSCC(4);\n    printf("%d\\n", sccCnt);\n    printf("%d\\n", comp[0] == comp[1] && comp[1] == comp[2]);\n    printf("%d\\n", comp[3] != comp[0]);\n    return 0;\n}`,
+        expected: "2\n1\n1\n"
+      },
+      {
+        name: "각 정점이 별도 SCC",
+        harness: `#include <cstdio>\n%USER_CODE%\nint main() {\n    initGraph();\n    addEdge(0,1); addEdge(1,2);\n    findSCC(3);\n    printf("%d\\n", sccCnt);\n    return 0;\n}`,
+        expected: "3\n"
+      },
+      {
+        name: "두 개의 사이클",
+        harness: `#include <cstdio>\n%USER_CODE%\nint main() {\n    initGraph();\n    addEdge(0,1); addEdge(1,0);\n    addEdge(2,3); addEdge(3,2);\n    addEdge(1,2);\n    findSCC(4);\n    printf("%d\\n", sccCnt);\n    printf("%d\\n", comp[0] == comp[1]);\n    printf("%d\\n", comp[2] == comp[3]);\n    printf("%d\\n", comp[0] != comp[2]);\n    return 0;\n}`,
+        expected: "2\n1\n1\n1\n"
+      }
+    ]
   },
   {
     id: 'convex_hull',
@@ -1606,7 +1860,24 @@ void grahamScan() {
         hull[hullSz++] = pts[i];
     }
 }`,
-    keywords: ['convex hull', 'Graham scan', 'cross product', 'geometry']
+    keywords: ['convex hull', 'Graham scan', 'cross product', 'geometry'],
+    testCases: [
+      {
+        name: "사각형 볼록 껍질",
+        harness: `#include <cstdio>\n%USER_CODE%\nint main() {\n    n = 5;\n    pts[0] = {0,0}; pts[1] = {2,0}; pts[2] = {2,2}; pts[3] = {0,2}; pts[4] = {1,1};\n    grahamScan();\n    printf("%d\\n", hullSz);\n    return 0;\n}`,
+        expected: "4\n"
+      },
+      {
+        name: "삼각형",
+        harness: `#include <cstdio>\n%USER_CODE%\nint main() {\n    n = 3;\n    pts[0] = {0,0}; pts[1] = {5,0}; pts[2] = {0,5};\n    grahamScan();\n    printf("%d\\n", hullSz);\n    return 0;\n}`,
+        expected: "3\n"
+      },
+      {
+        name: "일직선 점들",
+        harness: `#include <cstdio>\n%USER_CODE%\nint main() {\n    n = 3;\n    pts[0] = {0,0}; pts[1] = {1,0}; pts[2] = {2,0};\n    grahamScan();\n    printf("%d\\n", hullSz);\n    return 0;\n}`,
+        expected: "2\n"
+      }
+    ]
   },
   {
     id: 'trie',
@@ -1692,7 +1963,19 @@ struct Trie {
         return true;
     }
 };`,
-    keywords: ['trie', 'prefix tree', 'string']
+    keywords: ['trie', 'prefix tree', 'string'],
+    testCases: [
+      {
+        name: "insert/search/startsWith",
+        harness: `#include <cstdio>\n%USER_CODE%\nint main() {\n    Trie t;\n    t.init();\n    t.insert("apple");\n    t.insert("app");\n    printf("%d\\n", t.search("apple"));\n    printf("%d\\n", t.search("app"));\n    printf("%d\\n", t.search("ap"));\n    printf("%d\\n", t.startsWith("ap"));\n    printf("%d\\n", t.startsWith("b"));\n    return 0;\n}`,
+        expected: "1\n1\n0\n1\n0\n"
+      },
+      {
+        name: "빈 트라이 검색",
+        harness: `#include <cstdio>\n%USER_CODE%\nint main() {\n    Trie t;\n    t.init();\n    printf("%d\\n", t.search("abc"));\n    printf("%d\\n", t.startsWith(""));\n    t.insert("hello");\n    printf("%d\\n", t.search("hello"));\n    printf("%d\\n", t.search("hell"));\n    return 0;\n}`,
+        expected: "0\n1\n1\n0\n"
+      }
+    ]
   },
   {
     id: 'network_flow',
@@ -1805,7 +2088,24 @@ int maxFlow(int s, int t) {
     }
     return flow;
 }`,
-    keywords: ['max flow', 'Dinic', 'level graph', 'blocking flow']
+    keywords: ['max flow', 'Dinic', 'level graph', 'blocking flow'],
+    testCases: [
+      {
+        name: "기본 유량",
+        harness: `#include <cstdio>\n%USER_CODE%\nint main() {\n    init(4);\n    addEdge(0,1,10); addEdge(0,2,10);\n    addEdge(1,3,10); addEdge(2,3,10);\n    addEdge(1,2,1);\n    printf("%d\\n", maxFlow(0, 3));\n    return 0;\n}`,
+        expected: "20\n"
+      },
+      {
+        name: "병목 간선",
+        harness: `#include <cstdio>\n%USER_CODE%\nint main() {\n    init(3);\n    addEdge(0,1,100); addEdge(1,2,1);\n    printf("%d\\n", maxFlow(0, 2));\n    return 0;\n}`,
+        expected: "1\n"
+      },
+      {
+        name: "병렬 경로",
+        harness: `#include <cstdio>\n%USER_CODE%\nint main() {\n    init(2);\n    addEdge(0,1,3); addEdge(0,1,4);\n    printf("%d\\n", maxFlow(0, 1));\n    return 0;\n}`,
+        expected: "7\n"
+      }
+    ]
   },
   {
     id: 'knuth_optimization',
@@ -1870,7 +2170,24 @@ void solve() {
         }
     }
 }`,
-    keywords: ['Knuth optimization', 'interval DP', 'optimal BST', 'monotone condition']
+    keywords: ['Knuth optimization', 'interval DP', 'optimal BST', 'monotone condition'],
+    testCases: [
+      {
+        name: "파일 합치기 (4개)",
+        harness: `#include <cstdio>\n%USER_CODE%\nint main() {\n    n = 4;\n    int a[] = {10, 20, 30, 40};\n    prefix[0] = 0;\n    for (int i = 0; i < n; i++) prefix[i+1] = prefix[i] + a[i];\n    solve();\n    printf("%lld\\n", dp[0][3]);\n    return 0;\n}`,
+        expected: "170\n"
+      },
+      {
+        name: "파일 합치기 (2개)",
+        harness: `#include <cstdio>\n%USER_CODE%\nint main() {\n    n = 2;\n    int a[] = {5, 10};\n    prefix[0] = 0;\n    for (int i = 0; i < n; i++) prefix[i+1] = prefix[i] + a[i];\n    solve();\n    printf("%lld\\n", dp[0][1]);\n    return 0;\n}`,
+        expected: "15\n"
+      },
+      {
+        name: "동일 크기 파일 3개",
+        harness: `#include <cstdio>\n%USER_CODE%\nint main() {\n    n = 3;\n    int a[] = {10, 10, 10};\n    prefix[0] = 0;\n    for (int i = 0; i < n; i++) prefix[i+1] = prefix[i] + a[i];\n    solve();\n    printf("%lld\\n", dp[0][2]);\n    return 0;\n}`,
+        expected: "50\n"
+      }
+    ]
   }
 ];
 

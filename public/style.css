@@ -198,6 +198,27 @@ body {
     color: var(--text-primary);
 }
 
+.btn-danger {
+    background: transparent;
+    color: var(--red);
+    border: 1px solid var(--red);
+    padding: 4px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.btn-danger:hover {
+    background: rgba(248, 81, 73, 0.15);
+}
+
+.btn-danger:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
 /* Main Layout */
 #main {
     display: flex;
@@ -677,6 +698,86 @@ body {
 .complexity-info strong {
     color: var(--text-primary);
     margin-left: 4px;
+}
+
+/* Test Results */
+.compile-error {
+    background: rgba(248, 81, 73, 0.1);
+    border: 1px solid var(--red);
+    border-radius: 8px;
+    padding: 12px;
+    margin-top: 12px;
+}
+
+.compile-error h3 {
+    color: var(--red);
+    font-size: 13px;
+    margin: 0 0 8px;
+}
+
+.compile-error pre {
+    font-size: 12px;
+    color: var(--text-secondary);
+    white-space: pre-wrap;
+    word-break: break-all;
+    margin: 0;
+}
+
+.test-results {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.test-case {
+    border-radius: 8px;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+}
+
+.test-case.passed {
+    border-color: var(--green);
+    background: rgba(63, 185, 80, 0.06);
+}
+
+.test-case.failed {
+    border-color: var(--red);
+    background: rgba(248, 81, 73, 0.06);
+}
+
+.test-case-header {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.test-icon {
+    font-weight: 700;
+}
+
+.test-case.passed .test-icon { color: var(--green); }
+.test-case.failed .test-icon { color: var(--red); }
+
+.test-diff {
+    margin-top: 8px;
+    font-size: 12px;
+}
+
+.test-diff pre {
+    background: var(--bg-tertiary);
+    padding: 6px 10px;
+    border-radius: 4px;
+    margin: 2px 0 6px;
+    white-space: pre-wrap;
+    word-break: break-all;
+    color: var(--text-secondary);
+}
+
+.diff-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-secondary);
 }
 
 /* Scrollbar */
