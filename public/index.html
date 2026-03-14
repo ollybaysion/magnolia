@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Magnolia — Algorithm Trainer</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="app">
+        <!-- Top Bar -->
+        <header id="topbar">
+            <div class="topbar-left">
+                <h1 class="logo">Magnolia</h1>
+                <span class="subtitle">C++ Algorithm Trainer · No STL</span>
+            </div>
+            <div class="topbar-center">
+                <div id="timer" class="timer">00:00</div>
+                <button id="btn-reset-timer" class="btn-icon" title="타이머 리셋">↺</button>
+            </div>
+            <div class="topbar-right">
+                <label class="toggle-label">
+                    <input type="checkbox" id="toggle-guide" checked>
+                    <span class="toggle-slider"></span>
+                    <span class="toggle-text">Guide Mode</span>
+                </label>
+                <button id="btn-solution" class="btn-secondary" disabled>정답 보기</button>
+                <button id="btn-verify" class="btn-primary">검증하기</button>
+            </div>
+        </header>
+
+        <div id="main">
+            <!-- Left Sidebar: Algorithm List -->
+            <aside id="sidebar">
+                <div class="sidebar-header">
+                    <h2>알고리즘</h2>
+                    <select id="category-filter">
+                        <option value="all">전체</option>
+                    </select>
+                </div>
+                <ul id="algo-list"></ul>
+            </aside>
+
+            <!-- Center: Code Editor -->
+            <main id="editor-panel">
+                <div id="editor-header">
+                    <span id="current-algo-name">알고리즘을 선택하세요</span>
+                    <span id="current-algo-desc"></span>
+                </div>
+                <div id="editor-container"></div>
+            </main>
+
+            <!-- Right Panel: AI Feedback -->
+            <aside id="feedback-panel">
+                <div id="feedback-header">
+                    <h2 id="feedback-title">AI 피드백</h2>
+                </div>
+                <div id="feedback-content">
+                    <div class="empty-state">
+                        <p>왼쪽에서 알고리즘을 선택하고<br>코드를 작성하세요.</p>
+                        <p class="hint">Guide Mode가 켜져 있으면<br>실시간으로 피드백을 받습니다.</p>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </div>
+
+    <!-- Verification Modal -->
+    <div id="verify-modal" class="modal hidden">
+        <div class="modal-backdrop"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>검증 결과</h2>
+                <button id="modal-close" class="btn-icon">✕</button>
+            </div>
+            <div id="verify-result"></div>
+        </div>
+    </div>
+
+    <!-- Solution Modal -->
+    <div id="solution-modal" class="modal hidden">
+        <div class="modal-backdrop"></div>
+        <div class="modal-content modal-wide">
+            <div class="modal-header">
+                <h2 id="solution-title">정답 코드</h2>
+                <button id="solution-close" class="btn-icon">✕</button>
+            </div>
+            <div id="solution-body"></div>
+        </div>
+    </div>
+
+    <script src="algorithms.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs/loader.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
