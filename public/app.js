@@ -204,17 +204,39 @@ function renderGuideFeedback(data) {
     }
 
     html += `</div>`;
-    el.innerHTML = html;
+    // 부드러운 전환: 로딩 인디케이터 제거 후 페이드인
+    el.querySelector('.overlay-loading')?.remove();
+    const oldFeedback = el.querySelector('.guide-feedback');
+    const temp = document.createElement('div');
+    temp.innerHTML = html;
+    const newFeedback = temp.firstElementChild;
+    newFeedback.classList.add('fade-in');
+    if (oldFeedback) {
+        oldFeedback.replaceWith(newFeedback);
+    } else {
+        el.innerHTML = '';
+        el.appendChild(newFeedback);
+    }
 }
 
 function showLoadingFeedback() {
-    document.getElementById('feedback-content').innerHTML = `
-        <div class="loading-indicator">
+    const el = document.getElementById('feedback-content');
+    // 기존 피드백이 있으면 유지하고 로딩 인디케이터만 상단에 추가
+    const existing = el.querySelector('.guide-feedback');
+    const indicator = `<div class="loading-indicator overlay-loading">
             <div class="loading-dot"></div>
             <div class="loading-dot"></div>
             <div class="loading-dot"></div>
             <span>분석 중...</span>
         </div>`;
+    if (existing) {
+        // 기존 피드백 위에 로딩 오버레이
+        el.querySelector('.overlay-loading')?.remove();
+        existing.classList.add('fading');
+        existing.insertAdjacentHTML('beforebegin', indicator);
+    } else {
+        el.innerHTML = indicator;
+    }
 }
 
 function showEmptyFeedback() {

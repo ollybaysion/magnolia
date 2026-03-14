@@ -489,6 +489,27 @@ body {
     40% { opacity: 1; transform: scale(1); }
 }
 
+/* Feedback transitions */
+.overlay-loading {
+    position: relative;
+    z-index: 1;
+    margin-bottom: 8px;
+}
+
+.guide-feedback.fading {
+    opacity: 0.45;
+    transition: opacity 0.3s ease;
+}
+
+.guide-feedback.fade-in {
+    animation: fadeIn 0.35s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
 /* Modal */
 .modal {
     position: fixed;
