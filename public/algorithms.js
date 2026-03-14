@@ -45,6 +45,58 @@ void mergeSort(int left, int right) {
     keywords: ['divide and conquer', 'stable sort', 'O(n log n)']
   },
   {
+    id: 'counting_sort',
+    name: 'Counting Sort',
+    category: 'Sorting',
+    difficulty: 1,
+    description: '비교 기반이 아닌 정렬. 값의 범위가 제한적일 때 O(n + k)로 안정 정렬 가능.',
+    skeleton: `// Counting Sort (No STL)
+// 배열 arr[0..n-1]을 오름차순 정렬하시오.
+// 값의 범위: 0 <= arr[i] < MAXVAL
+
+const int MAXN = 100001;
+const int MAXVAL = 10001;
+
+int arr[MAXN], sorted[MAXN];
+int cnt[MAXVAL];
+int n;
+
+void countingSort() {
+    // TODO: 구현
+    // 1) cnt 배열 초기화
+    // 2) 각 값의 등장 횟수 카운트
+    // 3) cnt를 누적합으로 변환 (안정 정렬을 위해)
+    // 4) 뒤에서부터 순회하며 sorted에 배치
+    // 5) sorted → arr 복사
+}`,
+    solution: `const int MAXN = 100001;
+const int MAXVAL = 10001;
+
+int arr[MAXN], sorted[MAXN];
+int cnt[MAXVAL];
+int n;
+
+void countingSort() {
+    // 1) cnt 초기화
+    for (int i = 0; i < MAXVAL; i++) cnt[i] = 0;
+
+    // 2) 등장 횟수 카운트
+    for (int i = 0; i < n; i++) cnt[arr[i]]++;
+
+    // 3) 누적합 (cnt[v] = v 이하 값의 총 개수)
+    for (int i = 1; i < MAXVAL; i++) cnt[i] += cnt[i - 1];
+
+    // 4) 뒤에서부터 배치 (안정 정렬 보장)
+    for (int i = n - 1; i >= 0; i--) {
+        sorted[--cnt[arr[i]]] = arr[i];
+    }
+
+    // 5) 복사
+    for (int i = 0; i < n; i++) arr[i] = sorted[i];
+}`,
+    keywords: ['non-comparison sort', 'stable sort', 'O(n+k)', 'counting']
+  },
+  {
     id: 'heap',
     name: 'Max Heap',
     category: 'Data Structure',
