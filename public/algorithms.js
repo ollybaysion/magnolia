@@ -2188,6 +2188,264 @@ void solve() {
         expected: "50\n"
       }
     ]
+  },
+  {
+    id: 'deque',
+    name: 'Deque (Double-Ended Queue)',
+    category: 'Data Structure',
+    difficulty: 2,
+    description: '배열 기반 양방향 큐. pushFront, pushBack, popFront, popBack 구현.',
+    skeleton: `// Deque - Double-Ended Queue (No STL)
+// pushFront, pushBack, popFront, popBack, front, back, empty, size
+
+const int MAXN = 200002;
+
+struct Deque {
+    int data[MAXN];
+    int head, tail; // head: 앞쪽, tail: 뒤쪽 다음 위치
+
+    void init() {
+        // TODO: 초기화 (원형 배열)
+    }
+
+    bool empty() {
+        // TODO
+        return true;
+    }
+
+    int size() {
+        // TODO
+        return 0;
+    }
+
+    void pushFront(int val) {
+        // TODO
+    }
+
+    void pushBack(int val) {
+        // TODO
+    }
+
+    int front() {
+        // TODO
+        return -1;
+    }
+
+    int back() {
+        // TODO
+        return -1;
+    }
+
+    void popFront() {
+        // TODO
+    }
+
+    void popBack() {
+        // TODO
+    }
+};`,
+    solution: `const int MAXN = 200002;
+
+struct Deque {
+    int data[MAXN];
+    int head, tail;
+
+    void init() {
+        head = MAXN / 2;
+        tail = MAXN / 2;
+    }
+
+    bool empty() { return head == tail; }
+
+    int size() { return tail - head; }
+
+    void pushFront(int val) {
+        data[--head] = val;
+    }
+
+    void pushBack(int val) {
+        data[tail++] = val;
+    }
+
+    int front() { return data[head]; }
+
+    int back() { return data[tail - 1]; }
+
+    void popFront() { head++; }
+
+    void popBack() { tail--; }
+};`,
+    keywords: ['deque', 'double-ended queue', 'sliding window'],
+    testCases: [
+      {
+        name: "기본 연산",
+        harness: `#include <cstdio>\n%USER_CODE%\nint main() {\n    Deque dq;\n    dq.init();\n    dq.pushBack(1); dq.pushBack(2); dq.pushFront(0);\n    printf("%d %d %d\\n", dq.front(), dq.back(), dq.size());\n    dq.popFront();\n    printf("%d\\n", dq.front());\n    dq.popBack();\n    printf("%d\\n", dq.back());\n    return 0;\n}`,
+        expected: "0 2 3\n1\n1\n"
+      },
+      {
+        name: "empty 체크",
+        harness: `#include <cstdio>\n%USER_CODE%\nint main() {\n    Deque dq;\n    dq.init();\n    printf("%d\\n", dq.empty());\n    dq.pushBack(5);\n    printf("%d\\n", dq.empty());\n    dq.popBack();\n    printf("%d\\n", dq.empty());\n    return 0;\n}`,
+        expected: "1\n0\n1\n"
+      },
+      {
+        name: "앞뒤 교차 삽입",
+        harness: `#include <cstdio>\n%USER_CODE%\nint main() {\n    Deque dq;\n    dq.init();\n    dq.pushFront(3); dq.pushBack(4); dq.pushFront(2); dq.pushBack(5); dq.pushFront(1);\n    while (!dq.empty()) { printf("%d ", dq.front()); dq.popFront(); }\n    printf("\\n");\n    return 0;\n}`,
+        expected: "1 2 3 4 5 \n"
+      }
+    ]
+  },
+  {
+    id: 'or_opt',
+    name: 'Or-opt (TSP)',
+    category: 'Optimization',
+    difficulty: 3,
+    description: 'TSP 경로에서 연속 1~3개 노드를 다른 위치로 이동하여 개선하는 로컬 서치.',
+    skeleton: `// Or-opt Algorithm for TSP (No STL)
+// tour[] 배열에서 연속 segment를 떼어 다른 위치에 삽입하여 경로 개선
+
+const int MAXN = 1001;
+
+double x[MAXN], y[MAXN];
+int tour[MAXN];
+int n;
+
+double dist(int a, int b) {
+    // TODO: 두 점 사이 거리
+    return 0.0;
+}
+
+double tourLength() {
+    // TODO: 전체 경로 길이
+    return 0.0;
+}
+
+// tour에서 [from, from+segLen-1] 구간을 빼서 to 뒤에 삽입
+void moveSegment(int from, int segLen, int to) {
+    // TODO: segment 이동 구현
+}
+
+bool orOptStep(int segLen) {
+    // TODO: segLen 길이의 segment를 이동하여 개선 시도
+    // 개선 가능하면 이동 후 true, 아니면 false
+    return false;
+}
+
+void orOpt() {
+    // TODO: segLen = 3, 2, 1 순서로 반복 개선
+}`,
+    solution: `const int MAXN = 1001;
+
+double x[MAXN], y[MAXN];
+int tour[MAXN];
+int tmpTour[MAXN];
+int n;
+
+double dist(int a, int b) {
+    double dx = x[a] - x[b], dy = y[a] - y[b];
+    double val = dx * dx + dy * dy;
+    double r = val;
+    if (r > 0) {
+        for (int k = 0; k < 30; k++) r = (r + val / r) * 0.5;
+    }
+    return r;
+}
+
+double tourLength() {
+    double len = 0;
+    for (int i = 0; i < n; i++)
+        len += dist(tour[i], tour[(i + 1) % n]);
+    return len;
+}
+
+// tour에서 인덱스 from부터 segLen개를 빼서 to 뒤에 삽입
+void moveSegment(int from, int segLen, int to) {
+    int seg[4];
+    for (int i = 0; i < segLen; i++)
+        seg[i] = tour[(from + i) % n];
+
+    // seg를 제거한 나머지를 tmpTour에 복사
+    int cnt = 0;
+    for (int i = 0; i < n; i++) {
+        bool inSeg = false;
+        for (int j = 0; j < segLen; j++) {
+            if ((from + j) % n == i) { inSeg = true; break; }
+        }
+        if (!inSeg) tmpTour[cnt++] = tour[i];
+    }
+
+    // to 위치 재계산 (제거 후 인덱스에서)
+    // 단순화: to가 가리키는 노드 뒤에 삽입
+    int insertNode = tour[to];
+    int insertPos = -1;
+    for (int i = 0; i < cnt; i++) {
+        if (tmpTour[i] == insertNode) { insertPos = i + 1; break; }
+    }
+    if (insertPos == -1) insertPos = 0;
+
+    // 최종 tour 재구성
+    int idx = 0;
+    for (int i = 0; i < insertPos; i++) tour[idx++] = tmpTour[i];
+    for (int i = 0; i < segLen; i++) tour[idx++] = seg[i];
+    for (int i = insertPos; i < cnt; i++) tour[idx++] = tmpTour[i];
+}
+
+bool orOptStep(int segLen) {
+    for (int i = 0; i < n; i++) {
+        int a = tour[i];
+        int b = tour[(i + segLen) % n]; // seg 바로 다음
+        int prev = tour[(i - 1 + n) % n]; // seg 바로 전
+
+        double removeCost = dist(prev, a)
+            + dist(tour[(i + segLen - 1) % n], b)
+            - dist(prev, b);
+
+        for (int j = 0; j < n; j++) {
+            // seg가 아닌 위치에 삽입 시도
+            bool overlap = false;
+            for (int k = 0; k < segLen; k++) {
+                if ((i + k) % n == j || (i + k) % n == (j + 1) % n) {
+                    overlap = true; break;
+                }
+            }
+            if (overlap) continue;
+
+            int c = tour[j];
+            int d = tour[(j + 1) % n];
+            double insertCost = dist(c, a)
+                + dist(tour[(i + segLen - 1) % n], d)
+                - dist(c, d);
+
+            if (insertCost - removeCost < -1e-10) {
+                moveSegment(i, segLen, j);
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+void orOpt() {
+    bool improved = true;
+    while (improved) {
+        improved = false;
+        for (int seg = 3; seg >= 1; seg--) {
+            while (orOptStep(seg)) improved = true;
+        }
+    }
+}`,
+    keywords: ['TSP', 'or-opt', 'local search', 'segment relocation'],
+    testCases: [
+      {
+        name: "경로 개선",
+        harness: `#include <cstdio>\n%USER_CODE%\nint main() {\n    n = 5;\n    x[0]=0; y[0]=0; x[1]=1; y[1]=0; x[2]=3; y[2]=0; x[3]=2; y[3]=0; x[4]=4; y[4]=0;\n    tour[0]=0; tour[1]=1; tour[2]=3; tour[3]=2; tour[4]=4;\n    double before = tourLength();\n    orOpt();\n    double after = tourLength();\n    printf("%s\\n", after <= before + 1e-9 ? "OK" : "FAIL");\n    return 0;\n}`,
+        expected: "OK\n"
+      },
+      {
+        name: "이미 최적 삼각형",
+        harness: `#include <cstdio>\n%USER_CODE%\nint main() {\n    n = 3;\n    x[0]=0; y[0]=0; x[1]=1; y[1]=0; x[2]=0.5; y[2]=1;\n    tour[0]=0; tour[1]=1; tour[2]=2;\n    double before = tourLength();\n    orOpt();\n    double after = tourLength();\n    double diff = before - after;\n    if (diff < 0) diff = -diff;\n    printf("%s\\n", diff < 1e-6 ? "OK" : "FAIL");\n    return 0;\n}`,
+        expected: "OK\n"
+      }
+    ]
   }
 ];
 
