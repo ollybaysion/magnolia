@@ -9,7 +9,9 @@ const ALGORITHMS = [
 // 배열 arr[0..n-1]을 오름차순 정렬하시오.
 // 임시 배열 tmp[]를 사용할 수 있습니다.
 
-const int MAXN = 100001;
+#ifndef MAXN
+#define MAXN 100001
+#endif
 int arr[MAXN], tmp[MAXN];
 int n;
 
@@ -20,7 +22,9 @@ void merge(int left, int mid, int right) {
 void mergeSort(int left, int right) {
     // TODO: 구현
 }`,
-    solution: `const int MAXN = 100001;
+    solution: `#ifndef MAXN
+#define MAXN 100001
+#endif
 int arr[MAXN], tmp[MAXN];
 int n;
 
@@ -63,6 +67,45 @@ void mergeSort(int left, int right) {
         name: "단일 원소",
         harness: `#include <cstdio>\n%USER_CODE%\nint main() {\n    n = 1;\n    arr[0] = 42;\n    mergeSort(0, 0);\n    printf("%d\\n", arr[0]);\n    return 0;\n}`,
         expected: "42\n"
+      },
+      {
+        name: "모두 동일한 값",
+        harness: `#include <cstdio>\n%USER_CODE%\nint main() {\n    n = 5;\n    for (int i = 0; i < n; i++) arr[i] = 7;\n    mergeSort(0, n - 1);\n    for (int i = 0; i < n; i++) { if (i) printf(" "); printf("%d", arr[i]); }\n    printf("\\n");\n    return 0;\n}`,
+        expected: "7 7 7 7 7\n"
+      },
+      {
+        name: "음수 포함",
+        harness: `#include <cstdio>\n%USER_CODE%\nint main() {\n    n = 5;\n    int input[] = {3, -1, 0, -5, 2};\n    for (int i = 0; i < n; i++) arr[i] = input[i];\n    mergeSort(0, n - 1);\n    for (int i = 0; i < n; i++) { if (i) printf(" "); printf("%d", arr[i]); }\n    printf("\\n");\n    return 0;\n}`,
+        expected: "-5 -1 0 2 3\n"
+      },
+      {
+        name: "두 값만 존재",
+        harness: `#include <cstdio>\n%USER_CODE%\nint main() {\n    n = 6;\n    int input[] = {1, 0, 1, 0, 1, 0};\n    for (int i = 0; i < n; i++) arr[i] = input[i];\n    mergeSort(0, n - 1);\n    for (int i = 0; i < n; i++) { if (i) printf(" "); printf("%d", arr[i]); }\n    printf("\\n");\n    return 0;\n}`,
+        expected: "0 0 0 1 1 1\n"
+      },
+      {
+        name: "성능: n=10,000",
+        tier: "performance",
+        size: 10000,
+        timeout: 5000,
+        harness: `#include <cstdio>\n#include <ctime>\n#define MAXN 10001\n%USER_CODE%\nunsigned int _rng = 42;\nunsigned int _lcg() { _rng = _rng * 1664525u + 1013904223u; return _rng; }\nint main() {\n    n = 10000;\n    for (int i = 0; i < n; i++) arr[i] = (int)(_lcg() % 1000000);\n    clock_t t0 = clock();\n    mergeSort(0, n - 1);\n    clock_t t1 = clock();\n    bool ok = true;\n    for (int i = 1; i < n; i++) if (arr[i] < arr[i-1]) { ok = false; break; }\n    double ms = (double)(t1 - t0) / CLOCKS_PER_SEC * 1000.0;\n    if (ok) printf("PASS %.1f\\n", ms); else printf("FAIL not_sorted\\n");\n    return 0;\n}`,
+        expected: "__PERF__"
+      },
+      {
+        name: "성능: n=1,000,000",
+        tier: "performance",
+        size: 1000000,
+        timeout: 10000,
+        harness: `#include <cstdio>\n#include <ctime>\n#define MAXN 1000001\n%USER_CODE%\nunsigned int _rng = 42;\nunsigned int _lcg() { _rng = _rng * 1664525u + 1013904223u; return _rng; }\nint main() {\n    n = 1000000;\n    for (int i = 0; i < n; i++) arr[i] = (int)(_lcg() % 1000000000);\n    clock_t t0 = clock();\n    mergeSort(0, n - 1);\n    clock_t t1 = clock();\n    bool ok = true;\n    for (int i = 1; i < n; i++) if (arr[i] < arr[i-1]) { ok = false; break; }\n    double ms = (double)(t1 - t0) / CLOCKS_PER_SEC * 1000.0;\n    if (ok) printf("PASS %.1f\\n", ms); else printf("FAIL not_sorted\\n");\n    return 0;\n}`,
+        expected: "__PERF__"
+      },
+      {
+        name: "성능: n=100,000,000",
+        tier: "performance",
+        size: 100000000,
+        timeout: 60000,
+        harness: `#include <cstdio>\n#include <ctime>\n#define MAXN 100000001\n%USER_CODE%\nunsigned int _rng = 42;\nunsigned int _lcg() { _rng = _rng * 1664525u + 1013904223u; return _rng; }\nint main() {\n    n = 100000000;\n    for (int i = 0; i < n; i++) arr[i] = (int)(_lcg() % 1000000000);\n    clock_t t0 = clock();\n    mergeSort(0, n - 1);\n    clock_t t1 = clock();\n    bool ok = true;\n    for (int i = 1; i < n; i++) if (arr[i] < arr[i-1]) { ok = false; break; }\n    double ms = (double)(t1 - t0) / CLOCKS_PER_SEC * 1000.0;\n    if (ok) printf("PASS %.1f\\n", ms); else printf("FAIL not_sorted\\n");\n    return 0;\n}`,
+        expected: "__PERF__"
       }
     ]
   },
@@ -76,8 +119,12 @@ void mergeSort(int left, int right) {
 // 배열 arr[0..n-1]을 오름차순 정렬하시오.
 // 값의 범위: 0 <= arr[i] < MAXVAL
 
-const int MAXN = 100001;
-const int MAXVAL = 10001;
+#ifndef MAXN
+#define MAXN 100001
+#endif
+#ifndef MAXVAL
+#define MAXVAL 10001
+#endif
 
 int arr[MAXN], sorted[MAXN];
 int cnt[MAXVAL];
@@ -91,8 +138,12 @@ void countingSort() {
     // 4) 뒤에서부터 순회하며 sorted에 배치
     // 5) sorted → arr 복사
 }`,
-    solution: `const int MAXN = 100001;
-const int MAXVAL = 10001;
+    solution: `#ifndef MAXN
+#define MAXN 100001
+#endif
+#ifndef MAXVAL
+#define MAXVAL 10001
+#endif
 
 int arr[MAXN], sorted[MAXN];
 int cnt[MAXVAL];
@@ -132,6 +183,40 @@ void countingSort() {
         name: "단일 원소",
         harness: `#include <cstdio>\n%USER_CODE%\nint main() {\n    n = 1;\n    arr[0] = 5;\n    countingSort();\n    printf("%d\\n", arr[0]);\n    return 0;\n}`,
         expected: "5\n"
+      },
+      {
+        name: "모두 동일한 값",
+        harness: `#include <cstdio>\n%USER_CODE%\nint main() {\n    n = 5;\n    for (int i = 0; i < n; i++) arr[i] = 3;\n    countingSort();\n    for (int i = 0; i < n; i++) { if (i) printf(" "); printf("%d", sorted[i]); }\n    printf("\\n");\n    return 0;\n}`,
+        expected: "3 3 3 3 3\n"
+      },
+      {
+        name: "경계값 (0과 최대)",
+        harness: `#include <cstdio>\n%USER_CODE%\nint main() {\n    n = 4;\n    int input[] = {9999, 0, 5000, 0};\n    for (int i = 0; i < n; i++) arr[i] = input[i];\n    countingSort();\n    for (int i = 0; i < n; i++) { if (i) printf(" "); printf("%d", sorted[i]); }\n    printf("\\n");\n    return 0;\n}`,
+        expected: "0 0 5000 9999\n"
+      },
+      {
+        name: "성능: n=10,000",
+        tier: "performance",
+        size: 10000,
+        timeout: 5000,
+        harness: `#include <cstdio>\n#include <ctime>\n#define MAXN 10001\n#define MAXVAL 10001\n%USER_CODE%\nunsigned int _rng = 42;\nunsigned int _lcg() { _rng = _rng * 1664525u + 1013904223u; return _rng; }\nint main() {\n    n = 10000;\n    for (int i = 0; i < n; i++) arr[i] = (int)(_lcg() % 10000);\n    clock_t t0 = clock();\n    countingSort();\n    clock_t t1 = clock();\n    bool ok = true;\n    for (int i = 1; i < n; i++) if (sorted[i] < sorted[i-1]) { ok = false; break; }\n    double ms = (double)(t1 - t0) / CLOCKS_PER_SEC * 1000.0;\n    if (ok) printf("PASS %.1f\\n", ms); else printf("FAIL not_sorted\\n");\n    return 0;\n}`,
+        expected: "__PERF__"
+      },
+      {
+        name: "성능: n=1,000,000",
+        tier: "performance",
+        size: 1000000,
+        timeout: 10000,
+        harness: `#include <cstdio>\n#include <ctime>\n#define MAXN 1000001\n#define MAXVAL 1000001\n%USER_CODE%\nunsigned int _rng = 42;\nunsigned int _lcg() { _rng = _rng * 1664525u + 1013904223u; return _rng; }\nint main() {\n    n = 1000000;\n    for (int i = 0; i < n; i++) arr[i] = (int)(_lcg() % 1000000);\n    clock_t t0 = clock();\n    countingSort();\n    clock_t t1 = clock();\n    bool ok = true;\n    for (int i = 1; i < n; i++) if (sorted[i] < sorted[i-1]) { ok = false; break; }\n    double ms = (double)(t1 - t0) / CLOCKS_PER_SEC * 1000.0;\n    if (ok) printf("PASS %.1f\\n", ms); else printf("FAIL not_sorted\\n");\n    return 0;\n}`,
+        expected: "__PERF__"
+      },
+      {
+        name: "성능: n=100,000,000",
+        tier: "performance",
+        size: 100000000,
+        timeout: 60000,
+        harness: `#include <cstdio>\n#include <ctime>\n#define MAXN 100000001\n#define MAXVAL 1000001\n%USER_CODE%\nunsigned int _rng = 42;\nunsigned int _lcg() { _rng = _rng * 1664525u + 1013904223u; return _rng; }\nint main() {\n    n = 100000000;\n    for (int i = 0; i < n; i++) arr[i] = (int)(_lcg() % 1000000);\n    clock_t t0 = clock();\n    countingSort();\n    clock_t t1 = clock();\n    bool ok = true;\n    for (int i = 1; i < n; i++) if (sorted[i] < sorted[i-1]) { ok = false; break; }\n    double ms = (double)(t1 - t0) / CLOCKS_PER_SEC * 1000.0;\n    if (ok) printf("PASS %.1f\\n", ms); else printf("FAIL not_sorted\\n");\n    return 0;\n}`,
+        expected: "__PERF__"
       }
     ]
   },
@@ -144,7 +229,9 @@ void countingSort() {
     skeleton: `// Max Heap (No STL)
 // push(val), pop(), top() 연산을 구현하시오.
 
-const int MAXN = 100001;
+#ifndef MAXN
+#define MAXN 100001
+#endif
 
 struct MaxHeap {
     int data[MAXN];
@@ -165,7 +252,9 @@ struct MaxHeap {
         // TODO: 구현
     }
 };`,
-    solution: `const int MAXN = 100001;
+    solution: `#ifndef MAXN
+#define MAXN 100001
+#endif
 
 struct MaxHeap {
     int data[MAXN];
@@ -212,6 +301,129 @@ struct MaxHeap {
         name: "순차 추출",
         harness: `#include <cstdio>\n%USER_CODE%\nint main() {\n    MaxHeap h;\n    h.init();\n    int vals[] = {10, 4, 7, 1, 9, 3};\n    for (int i = 0; i < 6; i++) h.push(vals[i]);\n    while (h.sz > 0) { printf("%d ", h.top()); h.pop(); }\n    printf("\\n");\n    return 0;\n}`,
         expected: "10 9 7 4 3 1 \n"
+      },
+      {
+        name: "단일 원소 push/pop",
+        harness: `#include <cstdio>
+%USER_CODE%
+int main() {
+    MaxHeap h;
+    h.init();
+    h.push(42);
+    printf("%d\n", h.top());
+    h.pop();
+    h.push(1);
+    printf("%d\n", h.top());
+    return 0;
+}`,
+        expected: "42\n1\n"
+      },
+      {
+        name: "중복 값 처리",
+        harness: `#include <cstdio>
+%USER_CODE%
+int main() {
+    MaxHeap h;
+    h.init();
+    h.push(5); h.push(5); h.push(5); h.push(3); h.push(3);
+    while (h.sz > 0) { printf("%d ", h.top()); h.pop(); }
+    printf("\n");
+    return 0;
+}`,
+        expected: "5 5 5 3 3 \n"
+      },
+      {
+        name: "성능: n=10,000",
+        tier: "performance",
+        size: 10000,
+        timeout: 5000,
+        harness: `#include <cstdio>
+#include <ctime>
+#define MAXN 10001
+%USER_CODE%
+unsigned int _rng = 42;
+unsigned int _lcg() { _rng = _rng * 1664525u + 1013904223u; return _rng; }
+int main() {
+    MaxHeap h;
+    h.init();
+    int nn = 10000;
+    clock_t t0 = clock();
+    for (int i = 0; i < nn; i++) h.push((int)(_lcg() % 1000000));
+    bool ok = true;
+    int prev = h.top(); h.pop();
+    for (int i = 1; i < nn; i++) {
+        int cur = h.top(); h.pop();
+        if (cur > prev) { ok = false; break; }
+        prev = cur;
+    }
+    clock_t t1 = clock();
+    double ms = (double)(t1 - t0) / CLOCKS_PER_SEC * 1000.0;
+    if (ok) printf("PASS %.1f\n", ms); else printf("FAIL not_descending\n");
+    return 0;
+}`,
+        expected: "__PERF__"
+      },
+      {
+        name: "성능: n=1,000,000",
+        tier: "performance",
+        size: 1000000,
+        timeout: 10000,
+        harness: `#include <cstdio>
+#include <ctime>
+#define MAXN 1000001
+%USER_CODE%
+unsigned int _rng = 42;
+unsigned int _lcg() { _rng = _rng * 1664525u + 1013904223u; return _rng; }
+int main() {
+    MaxHeap h;
+    h.init();
+    int nn = 1000000;
+    clock_t t0 = clock();
+    for (int i = 0; i < nn; i++) h.push((int)(_lcg() % 1000000000));
+    bool ok = true;
+    int prev = h.top(); h.pop();
+    for (int i = 1; i < nn; i++) {
+        int cur = h.top(); h.pop();
+        if (cur > prev) { ok = false; break; }
+        prev = cur;
+    }
+    clock_t t1 = clock();
+    double ms = (double)(t1 - t0) / CLOCKS_PER_SEC * 1000.0;
+    if (ok) printf("PASS %.1f\n", ms); else printf("FAIL not_descending\n");
+    return 0;
+}`,
+        expected: "__PERF__"
+      },
+      {
+        name: "성능: n=10,000,000",
+        tier: "performance",
+        size: 10000000,
+        timeout: 30000,
+        harness: `#include <cstdio>
+#include <ctime>
+#define MAXN 10000001
+%USER_CODE%
+unsigned int _rng = 42;
+unsigned int _lcg() { _rng = _rng * 1664525u + 1013904223u; return _rng; }
+int main() {
+    MaxHeap h;
+    h.init();
+    int nn = 10000000;
+    clock_t t0 = clock();
+    for (int i = 0; i < nn; i++) h.push((int)(_lcg() % 1000000000));
+    bool ok = true;
+    int prev = h.top(); h.pop();
+    for (int i = 1; i < nn; i++) {
+        int cur = h.top(); h.pop();
+        if (cur > prev) { ok = false; break; }
+        prev = cur;
+    }
+    clock_t t1 = clock();
+    double ms = (double)(t1 - t0) / CLOCKS_PER_SEC * 1000.0;
+    if (ok) printf("PASS %.1f\n", ms); else printf("FAIL not_descending\n");
+    return 0;
+}`,
+        expected: "__PERF__"
       }
     ]
   },
@@ -224,7 +436,9 @@ struct MaxHeap {
     skeleton: `// Min Priority Queue (No STL)
 // push(val), pop(), top(), empty() 구현
 
-const int MAXN = 100001;
+#ifndef MAXN
+#define MAXN 100001
+#endif
 
 struct PQ {
     int heap[MAXN];
@@ -246,7 +460,9 @@ struct PQ {
         // TODO: 구현
     }
 };`,
-    solution: `const int MAXN = 100001;
+    solution: `#ifndef MAXN
+#define MAXN 100001
+#endif
 
 struct PQ {
     int heap[MAXN];
@@ -299,6 +515,130 @@ struct PQ {
         name: "순차 추출",
         harness: `#include <cstdio>\n%USER_CODE%\nint main() {\n    PQ pq;\n    pq.init();\n    int vals[] = {9, 1, 7, 3, 5};\n    for (int i = 0; i < 5; i++) pq.push(vals[i]);\n    while (!pq.empty()) { printf("%d ", pq.top()); pq.pop(); }\n    printf("\\n");\n    return 0;\n}`,
         expected: "1 3 5 7 9 \n"
+      },
+      {
+        name: "단일 원소 push/pop",
+        harness: `#include <cstdio>
+%USER_CODE%
+int main() {
+    PQ pq;
+    pq.init();
+    pq.push(99);
+    printf("%d\n", pq.top());
+    pq.pop();
+    printf("%d\n", pq.empty());
+    pq.push(7);
+    printf("%d\n", pq.top());
+    return 0;
+}`,
+        expected: "99\n1\n7\n"
+      },
+      {
+        name: "역순 삽입 (내림차순 → 오름차순 추출)",
+        harness: `#include <cstdio>
+%USER_CODE%
+int main() {
+    PQ pq;
+    pq.init();
+    for (int i = 10; i >= 1; i--) pq.push(i);
+    while (!pq.empty()) { printf("%d ", pq.top()); pq.pop(); }
+    printf("\n");
+    return 0;
+}`,
+        expected: "1 2 3 4 5 6 7 8 9 10 \n"
+      },
+      {
+        name: "성능: n=10,000",
+        tier: "performance",
+        size: 10000,
+        timeout: 5000,
+        harness: `#include <cstdio>
+#include <ctime>
+#define MAXN 10001
+%USER_CODE%
+unsigned int _rng = 42;
+unsigned int _lcg() { _rng = _rng * 1664525u + 1013904223u; return _rng; }
+int main() {
+    PQ pq;
+    pq.init();
+    int nn = 10000;
+    clock_t t0 = clock();
+    for (int i = 0; i < nn; i++) pq.push((int)(_lcg() % 1000000));
+    bool ok = true;
+    int prev = pq.top(); pq.pop();
+    for (int i = 1; i < nn; i++) {
+        int cur = pq.top(); pq.pop();
+        if (cur < prev) { ok = false; break; }
+        prev = cur;
+    }
+    clock_t t1 = clock();
+    double ms = (double)(t1 - t0) / CLOCKS_PER_SEC * 1000.0;
+    if (ok) printf("PASS %.1f\n", ms); else printf("FAIL not_ascending\n");
+    return 0;
+}`,
+        expected: "__PERF__"
+      },
+      {
+        name: "성능: n=1,000,000",
+        tier: "performance",
+        size: 1000000,
+        timeout: 10000,
+        harness: `#include <cstdio>
+#include <ctime>
+#define MAXN 1000001
+%USER_CODE%
+unsigned int _rng = 42;
+unsigned int _lcg() { _rng = _rng * 1664525u + 1013904223u; return _rng; }
+int main() {
+    PQ pq;
+    pq.init();
+    int nn = 1000000;
+    clock_t t0 = clock();
+    for (int i = 0; i < nn; i++) pq.push((int)(_lcg() % 1000000000));
+    bool ok = true;
+    int prev = pq.top(); pq.pop();
+    for (int i = 1; i < nn; i++) {
+        int cur = pq.top(); pq.pop();
+        if (cur < prev) { ok = false; break; }
+        prev = cur;
+    }
+    clock_t t1 = clock();
+    double ms = (double)(t1 - t0) / CLOCKS_PER_SEC * 1000.0;
+    if (ok) printf("PASS %.1f\n", ms); else printf("FAIL not_ascending\n");
+    return 0;
+}`,
+        expected: "__PERF__"
+      },
+      {
+        name: "성능: n=10,000,000",
+        tier: "performance",
+        size: 10000000,
+        timeout: 30000,
+        harness: `#include <cstdio>
+#include <ctime>
+#define MAXN 10000001
+%USER_CODE%
+unsigned int _rng = 42;
+unsigned int _lcg() { _rng = _rng * 1664525u + 1013904223u; return _rng; }
+int main() {
+    PQ pq;
+    pq.init();
+    int nn = 10000000;
+    clock_t t0 = clock();
+    for (int i = 0; i < nn; i++) pq.push((int)(_lcg() % 1000000000));
+    bool ok = true;
+    int prev = pq.top(); pq.pop();
+    for (int i = 1; i < nn; i++) {
+        int cur = pq.top(); pq.pop();
+        if (cur < prev) { ok = false; break; }
+        prev = cur;
+    }
+    clock_t t1 = clock();
+    double ms = (double)(t1 - t0) / CLOCKS_PER_SEC * 1000.0;
+    if (ok) printf("PASS %.1f\n", ms); else printf("FAIL not_ascending\n");
+    return 0;
+}`,
+        expected: "__PERF__"
       }
     ]
   },
@@ -312,7 +652,9 @@ struct PQ {
 // 구간 합 쿼리, 구간 덧셈 업데이트
 // build(), update(l, r, val), query(l, r)
 
-const int MAXN = 100001;
+#ifndef MAXN
+#define MAXN 100001
+#endif
 
 typedef long long ll;
 
@@ -343,7 +685,9 @@ struct LazySegTree {
         return 0;
     }
 };`,
-    solution: `const int MAXN = 100001;
+    solution: `#ifndef MAXN
+#define MAXN 100001
+#endif
 typedef long long ll;
 
 struct LazySegTree {
@@ -411,6 +755,19 @@ struct LazySegTree {
         name: "전체 구간 업데이트",
         harness: `#include <cstdio>\n%USER_CODE%\nint main() {\n    LazySegTree seg;\n    int a[] = {0, 0, 0};\n    seg.init(3);\n    seg.build(1, 0, 2, a);\n    seg.update(1, 0, 2, 0, 2, 5);\n    printf("%lld\\n", seg.query(1, 0, 2, 0, 2));\n    seg.update(1, 0, 2, 0, 0, 3);\n    printf("%lld\\n", seg.query(1, 0, 2, 0, 0));\n    return 0;\n}`,
         expected: "15\n8\n"
+      },
+      {
+        name: "전체 구간 업데이트 후 단일 쿼리",
+        harness: `#include <cstdio>\n%USER_CODE%\nint main() {\n    LazySegTree seg;\n    int a[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};\n    seg.init(10);\n    seg.build(1, 0, 9, a);\n    seg.update(1, 0, 9, 0, 9, 100);\n    printf("%lld\\n", seg.query(1, 0, 9, 0, 0));\n    printf("%lld\\n", seg.query(1, 0, 9, 9, 9));\n    printf("%lld\\n", seg.query(1, 0, 9, 0, 9));\n    seg.update(1, 0, 9, 5, 5, -50);\n    printf("%lld\\n", seg.query(1, 0, 9, 5, 5));\n    return 0;\n}`,
+        expected: "101\n110\n1055\n56\n"
+      },
+      {
+        name: "성능: N=100,000 구간 업데이트+쿼리",
+        tier: "performance",
+        size: 100000,
+        timeout: 5000,
+        harness: `#include <cstdio>\n#include <ctime>\n#define MAXN 100001\n%USER_CODE%\nint main() {\n    unsigned int rng = 42;\n    int N = 100000;\n    LazySegTree seg;\n    seg.init(N);\n    int a[MAXN];\n    for (int i = 0; i < N; i++) a[i] = i + 1;\n    seg.build(1, 0, N - 1, a);\n    clock_t t0 = clock();\n    long long checksum = 0;\n    for (int i = 0; i < N; i++) {\n        rng = rng * 1664525u + 1013904223u;\n        int l = (int)(rng % (unsigned)N);\n        rng = rng * 1664525u + 1013904223u;\n        int r = (int)(rng % (unsigned)N);\n        if (l > r) { int t = l; l = r; r = t; }\n        rng = rng * 1664525u + 1013904223u;\n        int val = (int)(rng % 100u);\n        seg.update(1, 0, N - 1, l, r, val);\n        rng = rng * 1664525u + 1013904223u;\n        int ql = (int)(rng % (unsigned)N);\n        rng = rng * 1664525u + 1013904223u;\n        int qr = (int)(rng % (unsigned)N);\n        if (ql > qr) { int t = ql; ql = qr; qr = t; }\n        checksum += seg.query(1, 0, N - 1, ql, qr);\n    }\n    clock_t t1 = clock();\n    double ms = (double)(t1 - t0) / CLOCKS_PER_SEC * 1000.0;\n    // verify single element query consistency\n    ll total = seg.query(1, 0, N - 1, 0, N - 1);\n    ll half1 = seg.query(1, 0, N - 1, 0, N/2 - 1);\n    ll half2 = seg.query(1, 0, N - 1, N/2, N - 1);\n    bool ok = (total == half1 + half2);\n    if (ok) printf("PASS %.1f\\n", ms); else printf("FAIL consistency\\n");\n    return 0;\n}`,
+        expected: "__PERF__"
       }
     ]
   },
@@ -424,8 +781,12 @@ struct LazySegTree {
 // 1) KNN: 각 점에서 K개의 최근접 이웃을 구한다.
 // 2) NN Chain: KNN 결과를 활용하여 계층적 군집화를 수행한다.
 
-const int MAXN = 1001;
-const int MAXK = 20;
+#ifndef MAXN
+#define MAXN 1001
+#endif
+#ifndef MAXK
+#define MAXK 20
+#endif
 
 double px[MAXN], py[MAXN]; // 점 좌표
 int n;
@@ -472,8 +833,12 @@ void nnChain() {
     // TODO: NN Chain 메인 루프
     // 상호 최근접 쌍을 찾아 병합 반복
 }`,
-    solution: `const int MAXN = 1001;
-const int MAXK = 20;
+    solution: `#ifndef MAXN
+#define MAXN 1001
+#endif
+#ifndef MAXK
+#define MAXK 20
+#endif
 
 double px[MAXN], py[MAXN];
 int n;
@@ -632,6 +997,19 @@ void nnChain() {
         name: "4점 군집화",
         harness: `#include <cstdio>\n%USER_CODE%\nint main() {\n    n = 4; K = 3;\n    px[0]=0; py[0]=0; px[1]=1; py[1]=0; px[2]=10; py[2]=0; px[3]=11; py[3]=0;\n    nnChain();\n    printf("%d\\n", mergeCnt);\n    return 0;\n}`,
         expected: "3\n"
+      },
+      {
+        name: "2점 최소 군집화",
+        harness: `#include <cstdio>\n%USER_CODE%\nint main() {\n    n = 2; K = 1;\n    px[0]=0; py[0]=0; px[1]=5; py[1]=0;\n    nnChain();\n    printf("%d\\n", mergeCnt);\n    // 2개 점은 1회 병합으로 끝\n    int a = mergeOrder[0][0], b = mergeOrder[0][1];\n    if (a > b) { int t = a; a = b; b = t; }\n    printf("%d %d\\n", a, b);\n    return 0;\n}`,
+        expected: "1\n0 1\n"
+      },
+      {
+        name: "성능: N=500 군집화",
+        tier: "performance",
+        size: 500,
+        timeout: 30000,
+        harness: `#include <cstdio>\n#include <ctime>\n#define MAXN 501\n#define MAXK 20\n%USER_CODE%\nunsigned int _rng = 12345;\nunsigned int _lcg() { _rng = _rng * 1664525u + 1013904223u; return _rng; }\nint main() {\n    n = 500; K = 10;\n    for (int i = 0; i < n; i++) {\n        px[i] = (double)(_lcg() % 100000) / 100.0;\n        py[i] = (double)(_lcg() % 100000) / 100.0;\n    }\n    clock_t t0 = clock();\n    nnChain();\n    clock_t t1 = clock();\n    double ms = (double)(t1 - t0) / CLOCKS_PER_SEC * 1000.0;\n    // Verify: should have n-1 merges\n    if (mergeCnt != n - 1) { printf("FAIL expected %d merges got %d\\n", n - 1, mergeCnt); return 0; }\n    // Verify: each merge involves alive clusters\n    bool used[501];\n    for (int i = 0; i < n; i++) used[i] = false;\n    bool ok = true;\n    for (int i = 0; i < mergeCnt && ok; i++) {\n        int a = mergeOrder[i][0], b = mergeOrder[i][1];\n        if (a < 0 || a >= n || b < 0 || b >= n || a == b) ok = false;\n    }\n    if (ok) printf("PASS %.1f\\n", ms); else printf("FAIL invalid_merge\\n");\n    return 0;\n}`,
+        expected: "__PERF__"
       }
     ]
   },
@@ -644,7 +1022,9 @@ void nnChain() {
     skeleton: `// 2-opt Algorithm for TSP (No STL)
 // tour[] 배열의 순서를 개선하시오.
 
-const int MAXN = 1001;
+#ifndef MAXN
+#define MAXN 1001
+#endif
 
 double x[MAXN], y[MAXN]; // 좌표
 int tour[MAXN];           // 현재 경로
@@ -673,7 +1053,9 @@ bool twoOptStep() {
 void twoOpt() {
     // TODO: 더 이상 개선 불가할 때까지 반복
 }`,
-    solution: `const int MAXN = 1001;
+    solution: `#ifndef MAXN
+#define MAXN 1001
+#endif
 
 double x[MAXN], y[MAXN];
 int tour[MAXN];
@@ -737,6 +1119,19 @@ void twoOpt() {
         name: "이미 최적",
         harness: `#include <cstdio>\n%USER_CODE%\nint main() {\n    n = 3;\n    x[0]=0; y[0]=0; x[1]=1; y[1]=0; x[2]=0.5; y[2]=1;\n    tour[0]=0; tour[1]=1; tour[2]=2;\n    double before = tourLength();\n    twoOpt();\n    double after = tourLength();\n    double diff = before - after;\n    if (diff < 0) diff = -diff;\n    printf("%s\\n", diff < 1e-6 ? "OK" : "FAIL");\n    return 0;\n}`,
         expected: "OK\n"
+      },
+      {
+        name: "삼각형 3점 (이미 최적)",
+        harness: `#include <cstdio>\n%USER_CODE%\nint main() {\n    n = 3;\n    x[0]=0; y[0]=0; x[1]=3; y[1]=0; x[2]=0; y[2]=4;\n    tour[0]=0; tour[1]=1; tour[2]=2;\n    double before = tourLength();\n    twoOpt();\n    double after = tourLength();\n    // 3점은 항상 최적 (순서 무관)\n    double diff = before - after;\n    if (diff < 0) diff = -diff;\n    printf("%s\\n", diff < 1e-6 ? "OK" : "FAIL");\n    // 모든 도시가 방문되었는지 확인\n    bool visited[3] = {false};\n    for (int i = 0; i < 3; i++) visited[tour[i]] = true;\n    bool all = visited[0] && visited[1] && visited[2];\n    printf("%s\\n", all ? "OK" : "FAIL");\n    return 0;\n}`,
+        expected: "OK\nOK\n"
+      },
+      {
+        name: "성능: N=5000 2-opt",
+        tier: "performance",
+        size: 5000,
+        timeout: 60000,
+        harness: `#include <cstdio>\n#include <ctime>\n#define MAXN 5001\n%USER_CODE%\nunsigned int _rng = 42;\nunsigned int _lcg() { _rng = _rng * 1664525u + 1013904223u; return _rng; }\nint main() {\n    n = 5000;\n    for (int i = 0; i < n; i++) {\n        x[i] = (double)(_lcg() % 100000) / 100.0;\n        y[i] = (double)(_lcg() % 100000) / 100.0;\n    }\n    // Greedy nearest-neighbor initial tour\n    bool used[5001] = {false};\n    tour[0] = 0; used[0] = true;\n    for (int i = 1; i < n; i++) {\n        int best = -1; double bestD = 1e18;\n        for (int j = 0; j < n; j++) {\n            if (!used[j]) {\n                double dx = x[tour[i-1]] - x[j], dy = y[tour[i-1]] - y[j];\n                double d = dx*dx + dy*dy;\n                if (d < bestD) { bestD = d; best = j; }\n            }\n        }\n        tour[i] = best; used[best] = true;\n    }\n    double greedy = tourLength();\n    clock_t t0 = clock();\n    twoOpt();\n    clock_t t1 = clock();\n    double ms = (double)(t1 - t0) / CLOCKS_PER_SEC * 1000.0;\n    double after = tourLength();\n    // Verify: tour visits all cities\n    bool v[5001] = {false};\n    bool ok = true;\n    for (int i = 0; i < n; i++) {\n        if (tour[i] < 0 || tour[i] >= n || v[tour[i]]) { ok = false; break; }\n        v[tour[i]] = true;\n    }\n    if (!ok) { printf("FAIL invalid_tour\\n"); return 0; }\n    if (after > greedy + 1e-6) { printf("FAIL tour_got_worse\\n"); return 0; }\n    printf("PASS %.1f\\n", ms);\n    return 0;\n}`,
+        expected: "__PERF__"
       }
     ]
   },
@@ -749,8 +1144,12 @@ void twoOpt() {
     skeleton: `// Dijkstra's Algorithm with custom Heap (No STL)
 // 그래프에서 시작점 src로부터 최단거리를 구하시오.
 
-const int MAXN = 100001;
-const int MAXE = 200001;
+#ifndef MAXN
+#define MAXN 100001
+#endif
+#ifndef MAXE
+#define MAXE 200001
+#endif
 const int INF = 0x3f3f3f3f;
 
 struct Edge {
@@ -786,8 +1185,12 @@ Node heapPop() {
 void dijkstra(int src, int n) {
     // TODO: 다익스트라 구현
 }`,
-    solution: `const int MAXN = 100001;
-const int MAXE = 200001;
+    solution: `#ifndef MAXN
+#define MAXN 100001
+#endif
+#ifndef MAXE
+#define MAXE 200001
+#endif
 const int INF = 0x3f3f3f3f;
 
 struct Edge {
@@ -874,6 +1277,19 @@ void dijkstra(int src, int n) {
         name: "도달 불가",
         harness: `#include <cstdio>\n%USER_CODE%\nint main() {\n    initGraph();\n    addEdge(0,1,3);\n    dijkstra(0, 3);\n    printf("%d %d %d\\n", dist[0], dist[1], dist[2] >= 0x3f3f3f3f ? -1 : dist[2]);\n    return 0;\n}`,
         expected: "0 3 -1\n"
+      },
+      {
+        name: "가중치 0인 간선",
+        harness: `#include <cstdio>\n%USER_CODE%\nint main() {\n    initGraph();\n    addEdge(0,1,0); addEdge(1,2,3); addEdge(0,2,5); addEdge(1,3,0); addEdge(2,3,1);\n    dijkstra(0, 4);\n    for (int i = 0; i < 4; i++) { if (i) printf(" "); printf("%d", dist[i]); }\n    printf("\\n");\n    return 0;\n}`,
+        expected: "0 0 3 0\n"
+      },
+      {
+        name: "성능: V=100,000 E=300,000",
+        tier: "performance",
+        size: 100000,
+        timeout: 15000,
+        harness: `#include <cstdio>\n#include <ctime>\n#define MAXN 100001\n#define MAXE 400002\n%USER_CODE%\nunsigned int _rng = 42;\nunsigned int _lcg() { _rng = _rng * 1664525u + 1013904223u; return _rng; }\nint main() {\n    int N = 100000, E = 300000;\n    initGraph();\n    for (int i = 0; i < N - 1; i++) addEdge(i, i + 1, (int)(_lcg() % 1000) + 1);\n    for (int i = 0; i < E - (N - 1); i++) {\n        int u = (int)(_lcg() % N);\n        int v = (int)(_lcg() % N);\n        if (u == v) v = (u + 1) % N;\n        int w = (int)(_lcg() % 1000) + 1;\n        addEdge(u, v, w);\n    }\n    clock_t t0 = clock();\n    dijkstra(0, N);\n    clock_t t1 = clock();\n    bool ok = true;\n    for (int u = 0; u < N && ok; u++) {\n        for (int e = head[u]; e != -1; e = edges[e].next) {\n            int v = edges[e].to, w = edges[e].w;\n            if (dist[u] < 0x3f3f3f3f && dist[v] > dist[u] + w) { ok = false; break; }\n        }\n    }\n    double ms = (double)(t1 - t0) / CLOCKS_PER_SEC * 1000.0;\n    if (ok) printf("PASS %.1f\\n", ms); else printf("FAIL relaxation_violated\\n");\n    return 0;\n}`,
+        expected: "__PERF__"
       }
     ]
   },
@@ -886,7 +1302,9 @@ void dijkstra(int src, int n) {
     skeleton: `// Quick Sort (No STL)
 // 배열 arr[0..n-1]을 오름차순 정렬하시오.
 
-const int MAXN = 100001;
+#ifndef MAXN
+#define MAXN 100001
+#endif
 int arr[MAXN];
 int n;
 
@@ -902,7 +1320,9 @@ int partition(int left, int right) {
 void quickSort(int left, int right) {
     // TODO: 구현
 }`,
-    solution: `const int MAXN = 100001;
+    solution: `#ifndef MAXN
+#define MAXN 100001
+#endif
 int arr[MAXN];
 int n;
 
@@ -952,6 +1372,40 @@ void quickSort(int left, int right) {
         name: "역순 정렬",
         harness: `#include <cstdio>\n%USER_CODE%\nint main() {\n    n = 4;\n    int input[] = {4, 3, 2, 1};\n    for (int i = 0; i < n; i++) arr[i] = input[i];\n    quickSort(0, n - 1);\n    for (int i = 0; i < n; i++) { if (i) printf(" "); printf("%d", arr[i]); }\n    printf("\\n");\n    return 0;\n}`,
         expected: "1 2 3 4\n"
+      },
+      {
+        name: "모두 동일한 값",
+        harness: `#include <cstdio>\n%USER_CODE%\nint main() {\n    n = 5;\n    for (int i = 0; i < n; i++) arr[i] = 7;\n    quickSort(0, n - 1);\n    for (int i = 0; i < n; i++) { if (i) printf(" "); printf("%d", arr[i]); }\n    printf("\\n");\n    return 0;\n}`,
+        expected: "7 7 7 7 7\n"
+      },
+      {
+        name: "음수 포함",
+        harness: `#include <cstdio>\n%USER_CODE%\nint main() {\n    n = 5;\n    int input[] = {3, -1, 0, -5, 2};\n    for (int i = 0; i < n; i++) arr[i] = input[i];\n    quickSort(0, n - 1);\n    for (int i = 0; i < n; i++) { if (i) printf(" "); printf("%d", arr[i]); }\n    printf("\\n");\n    return 0;\n}`,
+        expected: "-5 -1 0 2 3\n"
+      },
+      {
+        name: "성능: n=10,000",
+        tier: "performance",
+        size: 10000,
+        timeout: 5000,
+        harness: `#include <cstdio>\n#include <ctime>\n#define MAXN 10001\n%USER_CODE%\nunsigned int _rng = 42;\nunsigned int _lcg() { _rng = _rng * 1664525u + 1013904223u; return _rng; }\nint main() {\n    n = 10000;\n    for (int i = 0; i < n; i++) arr[i] = (int)(_lcg() % 1000000);\n    clock_t t0 = clock();\n    quickSort(0, n - 1);\n    clock_t t1 = clock();\n    bool ok = true;\n    for (int i = 1; i < n; i++) if (arr[i] < arr[i-1]) { ok = false; break; }\n    double ms = (double)(t1 - t0) / CLOCKS_PER_SEC * 1000.0;\n    if (ok) printf("PASS %.1f\\n", ms); else printf("FAIL not_sorted\\n");\n    return 0;\n}`,
+        expected: "__PERF__"
+      },
+      {
+        name: "성능: n=1,000,000",
+        tier: "performance",
+        size: 1000000,
+        timeout: 10000,
+        harness: `#include <cstdio>\n#include <ctime>\n#define MAXN 1000001\n%USER_CODE%\nunsigned int _rng = 42;\nunsigned int _lcg() { _rng = _rng * 1664525u + 1013904223u; return _rng; }\nint main() {\n    n = 1000000;\n    for (int i = 0; i < n; i++) arr[i] = (int)(_lcg() % 1000000000);\n    clock_t t0 = clock();\n    quickSort(0, n - 1);\n    clock_t t1 = clock();\n    bool ok = true;\n    for (int i = 1; i < n; i++) if (arr[i] < arr[i-1]) { ok = false; break; }\n    double ms = (double)(t1 - t0) / CLOCKS_PER_SEC * 1000.0;\n    if (ok) printf("PASS %.1f\\n", ms); else printf("FAIL not_sorted\\n");\n    return 0;\n}`,
+        expected: "__PERF__"
+      },
+      {
+        name: "성능: n=100,000,000",
+        tier: "performance",
+        size: 100000000,
+        timeout: 60000,
+        harness: `#include <cstdio>\n#include <ctime>\n#define MAXN 100000001\n%USER_CODE%\nunsigned int _rng = 42;\nunsigned int _lcg() { _rng = _rng * 1664525u + 1013904223u; return _rng; }\nint main() {\n    n = 100000000;\n    for (int i = 0; i < n; i++) arr[i] = (int)(_lcg() % 1000000000);\n    clock_t t0 = clock();\n    quickSort(0, n - 1);\n    clock_t t1 = clock();\n    bool ok = true;\n    for (int i = 1; i < n; i++) if (arr[i] < arr[i-1]) { ok = false; break; }\n    double ms = (double)(t1 - t0) / CLOCKS_PER_SEC * 1000.0;\n    if (ok) printf("PASS %.1f\\n", ms); else printf("FAIL not_sorted\\n");\n    return 0;\n}`,
+        expected: "__PERF__"
       }
     ]
   },
@@ -964,7 +1418,9 @@ void quickSort(int left, int right) {
     skeleton: `// Union-Find / Disjoint Set Union (No STL)
 // find(x), unite(a, b), sameSet(a, b) 구현
 
-const int MAXN = 100001;
+#ifndef MAXN
+#define MAXN 100001
+#endif
 
 int parent[MAXN];
 int rank_[MAXN];
@@ -987,7 +1443,9 @@ bool unite(int a, int b) {
 bool sameSet(int a, int b) {
     return find(a) == find(b);
 }`,
-    solution: `const int MAXN = 100001;
+    solution: `#ifndef MAXN
+#define MAXN 100001
+#endif
 
 int parent[MAXN];
 int rank_[MAXN];
@@ -1032,6 +1490,19 @@ bool sameSet(int a, int b) {
         name: "경로 압축 확인",
         harness: `#include <cstdio>\n%USER_CODE%\nint main() {\n    init(5);\n    unite(0,1); unite(1,2); unite(2,3); unite(3,4);\n    int r = find(4);\n    printf("%d\\n", find(0) == r);\n    printf("%d\\n", find(2) == r);\n    return 0;\n}`,
         expected: "1\n1\n"
+      },
+      {
+        name: "모두 같은 집합으로 합치기",
+        harness: `#include <cstdio>\n%USER_CODE%\nint main() {\n    init(100);\n    for (int i = 0; i < 99; i++) unite(i, i + 1);\n    bool allSame = true;\n    for (int i = 1; i < 100; i++) {\n        if (!sameSet(0, i)) { allSame = false; break; }\n    }\n    printf("%d\\n", allSame);\n    printf("%d\\n", unite(0, 50));\n    printf("%d\\n", unite(99, 0));\n    return 0;\n}`,
+        expected: "1\n0\n0\n"
+      },
+      {
+        name: "성능: N=1,000,000 unite+find",
+        tier: "performance",
+        size: 1000000,
+        timeout: 5000,
+        harness: `#include <cstdio>\n#include <ctime>\n#define MAXN 1000001\n%USER_CODE%\nint main() {\n    unsigned int rng = 12345;\n    int N = 1000000;\n    init(N);\n    clock_t t0 = clock();\n    for (int i = 0; i < N; i++) {\n        rng = rng * 1664525u + 1013904223u;\n        int a = (int)(rng % (unsigned)N);\n        rng = rng * 1664525u + 1013904223u;\n        int b = (int)(rng % (unsigned)N);\n        unite(a, b);\n    }\n    for (int i = 0; i < N; i++) {\n        rng = rng * 1664525u + 1013904223u;\n        int a = (int)(rng % (unsigned)N);\n        rng = rng * 1664525u + 1013904223u;\n        int b = (int)(rng % (unsigned)N);\n        find(a); find(b);\n        sameSet(a, b);\n    }\n    clock_t t1 = clock();\n    bool ok = true;\n    for (int i = 0; i < 100; i++) find(i);\n    double ms = (double)(t1 - t0) / CLOCKS_PER_SEC * 1000.0;\n    if (ok) printf("PASS %.1f\\n", ms); else printf("FAIL\\n");\n    return 0;\n}`,
+        expected: "__PERF__"
       }
     ]
   },
@@ -1045,8 +1516,12 @@ bool sameSet(int a, int b) {
 // 간선 정렬은 직접 구현 (merge sort 등)
 // Union-Find 사용
 
-const int MAXN = 100001;
-const int MAXE = 200001;
+#ifndef MAXN
+#define MAXN 100001
+#endif
+#ifndef MAXE
+#define MAXE 200001
+#endif
 
 struct Edge {
     int u, v, w;
@@ -1073,8 +1548,12 @@ long long kruskal(int n) {
     // TODO: MST 가중치 합 반환
     return 0;
 }`,
-    solution: `const int MAXN = 100001;
-const int MAXE = 200001;
+    solution: `#ifndef MAXN
+#define MAXN 100001
+#endif
+#ifndef MAXE
+#define MAXE 200001
+#endif
 
 struct Edge {
     int u, v, w;
@@ -1149,6 +1628,19 @@ long long kruskal(int n) {
         name: "삼각형 그래프",
         harness: `#include <cstdio>\n%USER_CODE%\nint main() {\n    edgeCnt = 0;\n    edges[edgeCnt++] = {0,1,1};\n    edges[edgeCnt++] = {1,2,2};\n    edges[edgeCnt++] = {0,2,3};\n    printf("%lld\\n", kruskal(3));\n    return 0;\n}`,
         expected: "3\n"
+      },
+      {
+        name: "모든 간선 가중치 동일",
+        harness: `#include <cstdio>\n%USER_CODE%\nint main() {\n    edgeCnt = 0;\n    edges[edgeCnt++] = {0,1,1};\n    edges[edgeCnt++] = {0,2,1};\n    edges[edgeCnt++] = {1,2,1};\n    edges[edgeCnt++] = {1,3,1};\n    edges[edgeCnt++] = {2,3,1};\n    edges[edgeCnt++] = {2,4,1};\n    edges[edgeCnt++] = {3,4,1};\n    long long w = kruskal(5);\n    printf("%lld\\n", w);\n    return 0;\n}`,
+        expected: "4\n"
+      },
+      {
+        name: "성능: V=10,000 E=50,000",
+        tier: "performance",
+        size: 10000,
+        timeout: 10000,
+        harness: `#include <cstdio>\n#include <ctime>\n#define MAXN 10001\n#define MAXE 60002\n%USER_CODE%\nunsigned int _rng = 42;\nunsigned int _lcg() { _rng = _rng * 1664525u + 1013904223u; return _rng; }\nint main() {\n    int N = 10000, E = 50000;\n    edgeCnt = 0;\n    for (int i = 0; i < N - 1; i++) {\n        int w = (int)(_lcg() % 10000) + 1;\n        edges[edgeCnt++] = {i, i + 1, w};\n    }\n    for (int i = 0; i < E - (N - 1); i++) {\n        int u = (int)(_lcg() % N);\n        int v = (int)(_lcg() % N);\n        if (u == v) v = (u + 1) % N;\n        int w = (int)(_lcg() % 10000) + 1;\n        edges[edgeCnt++] = {u, v, w};\n    }\n    clock_t t0 = clock();\n    long long mst = kruskal(N);\n    clock_t t1 = clock();\n    int cnt = 0;\n    for (int i = 0; i < N; i++) parent[i] = i;\n    for (int i = 0; i < edgeCnt; i++) {\n        int a = edges[i].u, b = edges[i].v;\n        while (parent[a] != a) a = parent[a];\n        while (parent[b] != b) b = parent[b];\n    }\n    bool connected = true;\n    int root = find(0);\n    for (int i = 1; i < N; i++) if (find(i) != root) { connected = false; break; }\n    double ms = (double)(t1 - t0) / CLOCKS_PER_SEC * 1000.0;\n    if (connected && mst > 0) printf("PASS %.1f\\n", ms); else printf("FAIL mst_invalid\\n");\n    return 0;\n}`,
+        expected: "__PERF__"
       }
     ]
   },
@@ -1161,8 +1653,12 @@ long long kruskal(int n) {
     skeleton: `// BFS with custom Queue (No STL)
 // 시작점 src에서 모든 정점까지의 최단 거리(간선 수)를 구하시오.
 
-const int MAXN = 100001;
-const int MAXE = 200001;
+#ifndef MAXN
+#define MAXN 100001
+#endif
+#ifndef MAXE
+#define MAXE 200001
+#endif
 
 struct Edge {
     int to, next;
@@ -1184,8 +1680,12 @@ int qf, qr;
 void bfs(int src, int n) {
     // TODO: BFS 구현
 }`,
-    solution: `const int MAXN = 100001;
-const int MAXE = 200001;
+    solution: `#ifndef MAXN
+#define MAXN 100001
+#endif
+#ifndef MAXE
+#define MAXE 200001
+#endif
 
 struct Edge {
     int to, next;
@@ -1239,6 +1739,19 @@ void bfs(int src, int n) {
         name: "선형 그래프",
         harness: `#include <cstdio>\n%USER_CODE%\nint main() {\n    initGraph();\n    addEdge(0,1); addEdge(1,2); addEdge(2,3); addEdge(3,4);\n    bfs(0, 5);\n    for (int i = 0; i < 5; i++) { if (i) printf(" "); printf("%d", dist[i]); }\n    printf("\\n");\n    return 0;\n}`,
         expected: "0 1 2 3 4\n"
+      },
+      {
+        name: "자기 자신만 있는 그래프",
+        harness: `#include <cstdio>\n%USER_CODE%\nint main() {\n    initGraph();\n    bfs(0, 1);\n    printf("%d\\n", dist[0]);\n    return 0;\n}`,
+        expected: "0\n"
+      },
+      {
+        name: "성능: V=100,000 random graph",
+        tier: "performance",
+        size: 100000,
+        timeout: 10000,
+        harness: `#include <cstdio>\n#include <ctime>\n#define MAXN 100001\n#define MAXE 400002\n%USER_CODE%\nunsigned int _rng = 42;\nunsigned int _lcg() { _rng = _rng * 1664525u + 1013904223u; return _rng; }\nint main() {\n    int N = 100000, E = 200000;\n    initGraph();\n    for (int i = 0; i < N - 1; i++) { addEdge(i, i + 1); addEdge(i + 1, i); }\n    for (int i = 0; i < E - (N - 1); i++) {\n        int u = (int)(_lcg() % N);\n        int v = (int)(_lcg() % N);\n        if (u == v) v = (u + 1) % N;\n        addEdge(u, v); addEdge(v, u);\n    }\n    clock_t t0 = clock();\n    bfs(0, N);\n    clock_t t1 = clock();\n    bool ok = (dist[0] == 0);\n    for (int u = 0; u < N && ok; u++) {\n        if (dist[u] < 0) { ok = false; break; }\n        for (int e = head[u]; e != -1; e = edges[e].next) {\n            int v = edges[e].to;\n            if (dist[v] > dist[u] + 1) { ok = false; break; }\n        }\n    }\n    double ms = (double)(t1 - t0) / CLOCKS_PER_SEC * 1000.0;\n    if (ok) printf("PASS %.1f\\n", ms); else printf("FAIL bfs_invalid\\n");\n    return 0;\n}`,
+        expected: "__PERF__"
       }
     ]
   },
@@ -1250,8 +1763,12 @@ void bfs(int src, int n) {
     description: 'DAG에서 위상 정렬. 큐 기반 Kahn 알고리즘.',
     skeleton: `// Topological Sort - Kahn's Algorithm (No STL)
 
-const int MAXN = 100001;
-const int MAXE = 200001;
+#ifndef MAXN
+#define MAXN 100001
+#endif
+#ifndef MAXE
+#define MAXE 200001
+#endif
 
 struct Edge {
     int to, next;
@@ -1274,8 +1791,12 @@ bool topoSort(int n) {
     // TODO: 위상 정렬. 사이클 있으면 false 반환
     return true;
 }`,
-    solution: `const int MAXN = 100001;
-const int MAXE = 200001;
+    solution: `#ifndef MAXN
+#define MAXN 100001
+#endif
+#ifndef MAXE
+#define MAXE 200001
+#endif
 
 struct Edge {
     int to, next;
@@ -1323,6 +1844,19 @@ bool topoSort(int n) {
         name: "사이클 감지",
         harness: `#include <cstdio>\n%USER_CODE%\nint main() {\n    initGraph();\n    addEdge(0,1); addEdge(1,2); addEdge(2,0);\n    bool ok = topoSort(3);\n    printf("%d\\n", ok);\n    return 0;\n}`,
         expected: "0\n"
+      },
+      {
+        name: "이미 순서대로인 DAG (선형 체인)",
+        harness: `#include <cstdio>\n%USER_CODE%\nint main() {\n    initGraph();\n    addEdge(0,1); addEdge(1,2); addEdge(2,3); addEdge(3,4);\n    bool ok = topoSort(5);\n    printf("%d\\n", ok);\n    int pos[5];\n    for (int i = 0; i < 5; i++) pos[result[i]] = i;\n    bool valid = true;\n    for (int i = 0; i < 4; i++) if (pos[i] > pos[i+1]) { valid = false; break; }\n    printf("%d\\n", valid);\n    return 0;\n}`,
+        expected: "1\n1\n"
+      },
+      {
+        name: "성능: V=10,000 E=30,000 random DAG",
+        tier: "performance",
+        size: 10000,
+        timeout: 10000,
+        harness: `#include <cstdio>\n#include <ctime>\n#define MAXN 10001\n#define MAXE 40002\n%USER_CODE%\nunsigned int _rng = 42;\nunsigned int _lcg() { _rng = _rng * 1664525u + 1013904223u; return _rng; }\nint main() {\n    int N = 10000, E = 30000;\n    initGraph();\n    for (int i = 0; i < E; i++) {\n        int u = (int)(_lcg() % N);\n        int v = (int)(_lcg() % N);\n        if (u >= v) { int t = u; u = v; v = t; }\n        if (u == v) v = (u + 1 < N) ? u + 1 : u - 1;\n        if (u > v) { int t = u; u = v; v = t; }\n        addEdge(u, v);\n    }\n    clock_t t0 = clock();\n    bool ok = topoSort(N);\n    clock_t t1 = clock();\n    bool valid = true;\n    if (ok) {\n        int pos[10001];\n        for (int i = 0; i < N; i++) pos[result[i]] = i;\n        for (int u = 0; u < N && valid; u++) {\n            for (int e = head[u]; e != -1; e = edges[e].next) {\n                if (pos[u] > pos[edges[e].to]) { valid = false; break; }\n            }\n        }\n    }\n    double ms = (double)(t1 - t0) / CLOCKS_PER_SEC * 1000.0;\n    if (ok && valid) printf("PASS %.1f\\n", ms); else printf("FAIL topo_invalid\\n");\n    return 0;\n}`,
+        expected: "__PERF__"
       }
     ]
   },
@@ -1334,7 +1868,9 @@ bool topoSort(int n) {
     description: '이진 리프팅으로 LCA를 O(log n)에 구하기.',
     skeleton: `// LCA with Binary Lifting (No STL)
 
-const int MAXN = 100001;
+#ifndef MAXN
+#define MAXN 100001
+#endif
 const int LOG = 17;
 
 struct Edge {
@@ -1365,7 +1901,9 @@ int lca(int u, int v) {
     // TODO: LCA 구하기
     return 0;
 }`,
-    solution: `const int MAXN = 100001;
+    solution: `#ifndef MAXN
+#define MAXN 100001
+#endif
 const int LOG = 17;
 
 struct Edge {
@@ -1445,6 +1983,19 @@ int lca(int u, int v) {
         name: "직선 트리",
         harness: `#include <cstdio>\n%USER_CODE%\nint main() {\n    initGraph();\n    for (int i = 0; i < 4; i++) { addEdge(i, i+1); addEdge(i+1, i); }\n    preprocess(0);\n    printf("%d\\n", lca(0, 4));\n    printf("%d\\n", lca(2, 4));\n    printf("%d\\n", lca(3, 3));\n    return 0;\n}`,
         expected: "0\n2\n3\n"
+      },
+      {
+        name: "루트 노드끼리 LCA",
+        harness: `#include <cstdio>\n%USER_CODE%\nint main() {\n    initGraph();\n    addEdge(0,1); addEdge(1,0);\n    addEdge(0,2); addEdge(2,0);\n    addEdge(1,3); addEdge(3,1);\n    addEdge(2,4); addEdge(4,2);\n    preprocess(0);\n    printf("%d\\n", lca(0, 0));\n    printf("%d\\n", lca(0, 3));\n    printf("%d\\n", lca(0, 4));\n    printf("%d\\n", lca(3, 4));\n    return 0;\n}`,
+        expected: "0\n0\n0\n0\n"
+      },
+      {
+        name: "성능: N=100,000 노드 트리 LCA 쿼리",
+        tier: "performance",
+        size: 100000,
+        timeout: 5000,
+        harness: `#include <cstdio>\n#include <ctime>\n#define MAXN 100001\n%USER_CODE%\nint main() {\n    unsigned int rng = 42;\n    int N = 100000;\n    initGraph();\n    for (int i = 1; i < N; i++) {\n        rng = rng * 1664525u + 1013904223u;\n        int p = (int)(rng % (unsigned)i);\n        addEdge(p, i); addEdge(i, p);\n    }\n    preprocess(0);\n    clock_t t0 = clock();\n    int Q = 200000;\n    long long checksum = 0;\n    for (int i = 0; i < Q; i++) {\n        rng = rng * 1664525u + 1013904223u;\n        int u = (int)(rng % (unsigned)N);\n        rng = rng * 1664525u + 1013904223u;\n        int v = (int)(rng % (unsigned)N);\n        checksum += lca(u, v);\n    }\n    clock_t t1 = clock();\n    double ms = (double)(t1 - t0) / CLOCKS_PER_SEC * 1000.0;\n    bool ok = (lca(0, 0) == 0);\n    if (ok) printf("PASS %.1f\\n", ms); else printf("FAIL\\n");\n    return 0;\n}`,
+        expected: "__PERF__"
       }
     ]
   },
@@ -1459,7 +2010,9 @@ int lca(int u, int v) {
 // query(i): sum of a[1..i]
 // rangeQuery(l, r): sum of a[l..r]
 
-const int MAXN = 100001;
+#ifndef MAXN
+#define MAXN 100001
+#endif
 
 struct BIT {
     long long tree[MAXN];
@@ -1484,7 +2037,9 @@ struct BIT {
         return 0;
     }
 };`,
-    solution: `const int MAXN = 100001;
+    solution: `#ifndef MAXN
+#define MAXN 100001
+#endif
 
 struct BIT {
     long long tree[MAXN];
@@ -1522,6 +2077,19 @@ struct BIT {
         name: "단일 원소",
         harness: `#include <cstdio>\n%USER_CODE%\nint main() {\n    BIT bit;\n    bit.init(1);\n    bit.update(1, 10);\n    printf("%lld\\n", bit.query(1));\n    printf("%lld\\n", bit.rangeQuery(1, 1));\n    return 0;\n}`,
         expected: "10\n10\n"
+      },
+      {
+        name: "단일 원소 update 후 query",
+        harness: `#include <cstdio>\n%USER_CODE%\nint main() {\n    BIT bit;\n    bit.init(5);\n    bit.update(3, 100);\n    printf("%lld\\n", bit.query(2));\n    printf("%lld\\n", bit.query(3));\n    printf("%lld\\n", bit.rangeQuery(3, 3));\n    bit.update(3, -30);\n    printf("%lld\\n", bit.rangeQuery(3, 3));\n    printf("%lld\\n", bit.rangeQuery(1, 5));\n    return 0;\n}`,
+        expected: "0\n100\n100\n70\n70\n"
+      },
+      {
+        name: "성능: N=1,000,000 update+query",
+        tier: "performance",
+        size: 1000000,
+        timeout: 5000,
+        harness: `#include <cstdio>\n#include <ctime>\n#define MAXN 1000002\n%USER_CODE%\nint main() {\n    unsigned int rng = 42;\n    int N = 1000000;\n    BIT bit;\n    bit.init(N);\n    clock_t t0 = clock();\n    long long checksum = 0;\n    for (int i = 0; i < N; i++) {\n        rng = rng * 1664525u + 1013904223u;\n        int idx = (int)(rng % (unsigned)N) + 1;\n        rng = rng * 1664525u + 1013904223u;\n        int val = (int)(rng % 1000u) - 500;\n        bit.update(idx, val);\n        rng = rng * 1664525u + 1013904223u;\n        int q = (int)(rng % (unsigned)N) + 1;\n        checksum += bit.query(q);\n    }\n    clock_t t1 = clock();\n    double ms = (double)(t1 - t0) / CLOCKS_PER_SEC * 1000.0;\n    long long total = bit.query(N);\n    long long partial = bit.query(N/2) + bit.rangeQuery(N/2+1, N);\n    bool ok = (total == partial);\n    if (ok) printf("PASS %.1f\\n", ms); else printf("FAIL consistency\\n");\n    return 0;\n}`,
+        expected: "__PERF__"
       }
     ]
   },
@@ -1633,6 +2201,19 @@ bool erase(int key) {
         name: "해시 충돌 (음수키)",
         harness: `#include <cstdio>\n%USER_CODE%\nint main() {\n    init();\n    insert(-5, 50); insert(-100003, 60);\n    printf("%d\\n", find(-5));\n    printf("%d\\n", find(-100003));\n    erase(-5);\n    printf("%d\\n", find(-5));\n    printf("%d\\n", find(-100003));\n    return 0;\n}`,
         expected: "50\n60\n-1\n60\n"
+      },
+      {
+        name: "같은 키 덮어쓰기",
+        harness: `#include <cstdio>\n%USER_CODE%\nint main() {\n    init();\n    insert(42, 1);\n    printf("%d\\n", find(42));\n    insert(42, 2);\n    printf("%d\\n", find(42));\n    insert(42, 3);\n    printf("%d\\n", find(42));\n    insert(42, 999);\n    printf("%d\\n", find(42));\n    erase(42);\n    printf("%d\\n", find(42));\n    insert(42, 100);\n    printf("%d\\n", find(42));\n    return 0;\n}`,
+        expected: "1\n2\n3\n999\n-1\n100\n"
+      },
+      {
+        name: "성능: N=1,000,000 insert+get",
+        tier: "performance",
+        size: 1000000,
+        timeout: 10000,
+        harness: `#include <cstdio>\n#include <ctime>\n%USER_CODE%\nint main() {\n    unsigned int rng = 12345;\n    int N = 1000000;\n    init();\n    clock_t t0 = clock();\n    for (int i = 0; i < N; i++) {\n        rng = rng * 1664525u + 1013904223u;\n        int key = (int)(rng % 500000u);\n        rng = rng * 1664525u + 1013904223u;\n        int val = (int)(rng % 1000000u);\n        insert(key, val);\n    }\n    int found = 0;\n    for (int i = 0; i < N; i++) {\n        rng = rng * 1664525u + 1013904223u;\n        int key = (int)(rng % 500000u);\n        if (find(key) != -1) found++;\n    }\n    clock_t t1 = clock();\n    double ms = (double)(t1 - t0) / CLOCKS_PER_SEC * 1000.0;\n    // verify: insert then find same key works\n    insert(999999, 42);\n    bool ok = (find(999999) == 42) && (found > 0);\n    if (ok) printf("PASS %.1f\\n", ms); else printf("FAIL\\n");\n    return 0;\n}`,
+        expected: "__PERF__"
       }
     ]
   },
@@ -1644,8 +2225,12 @@ bool erase(int key) {
     description: "Tarjan 알고리즘으로 강결합 컴포넌트 분리.",
     skeleton: `// Strongly Connected Components - Tarjan (No STL)
 
-const int MAXN = 100001;
-const int MAXE = 200001;
+#ifndef MAXN
+#define MAXN 100001
+#endif
+#ifndef MAXE
+#define MAXE 200001
+#endif
 
 struct Edge {
     int to, next;
@@ -1673,8 +2258,12 @@ void tarjan(int u) {
 void findSCC(int n) {
     // TODO: 모든 정점에 대해 Tarjan 실행
 }`,
-    solution: `const int MAXN = 100001;
-const int MAXE = 200001;
+    solution: `#ifndef MAXN
+#define MAXN 100001
+#endif
+#ifndef MAXE
+#define MAXE 200001
+#endif
 
 struct Edge {
     int to, next;
@@ -1747,6 +2336,19 @@ void findSCC(int n) {
         name: "두 개의 사이클",
         harness: `#include <cstdio>\n%USER_CODE%\nint main() {\n    initGraph();\n    addEdge(0,1); addEdge(1,0);\n    addEdge(2,3); addEdge(3,2);\n    addEdge(1,2);\n    findSCC(4);\n    printf("%d\\n", sccCnt);\n    printf("%d\\n", comp[0] == comp[1]);\n    printf("%d\\n", comp[2] == comp[3]);\n    printf("%d\\n", comp[0] != comp[2]);\n    return 0;\n}`,
         expected: "2\n1\n1\n1\n"
+      },
+      {
+        name: "모든 노드가 별개의 SCC (간선 없음)",
+        harness: `#include <cstdio>\n%USER_CODE%\nint main() {\n    initGraph();\n    findSCC(5);\n    printf("%d\\n", sccCnt);\n    bool allDiff = true;\n    for (int i = 0; i < 5 && allDiff; i++)\n        for (int j = i + 1; j < 5; j++)\n            if (comp[i] == comp[j]) { allDiff = false; break; }\n    printf("%d\\n", allDiff);\n    return 0;\n}`,
+        expected: "5\n1\n"
+      },
+      {
+        name: "성능: V=10,000 E=30,000 random",
+        tier: "performance",
+        size: 10000,
+        timeout: 10000,
+        harness: `#include <cstdio>\n#include <ctime>\n#define MAXN 10001\n#define MAXE 30002\n%USER_CODE%\nunsigned int _rng = 42;\nunsigned int _lcg() { _rng = _rng * 1664525u + 1013904223u; return _rng; }\nint main() {\n    int N = 10000, E = 30000;\n    initGraph();\n    for (int i = 0; i < E; i++) {\n        int u = (int)(_lcg() % N);\n        int v = (int)(_lcg() % N);\n        if (u == v) v = (u + 1) % N;\n        addEdge(u, v);\n    }\n    clock_t t0 = clock();\n    findSCC(N);\n    clock_t t1 = clock();\n    bool ok = (sccCnt > 0 && sccCnt <= N);\n    for (int i = 0; i < N && ok; i++) {\n        if (comp[i] < 1 || comp[i] > sccCnt) { ok = false; break; }\n    }\n    double ms = (double)(t1 - t0) / CLOCKS_PER_SEC * 1000.0;\n    if (ok) printf("PASS %.1f\\n", ms); else printf("FAIL scc_invalid\\n");\n    return 0;\n}`,
+        expected: "__PERF__"
       }
     ]
   },
@@ -1759,7 +2361,9 @@ void findSCC(int n) {
     skeleton: `// Convex Hull - Graham Scan (No STL)
 // 점 집합의 볼록 껍질을 구하시오.
 
-const int MAXN = 100001;
+#ifndef MAXN
+#define MAXN 100001
+#endif
 
 struct Point {
     long long x, y;
@@ -1785,7 +2389,9 @@ void sortPoints() {
 void grahamScan() {
     // TODO: 볼록 껍질 구하기
 }`,
-    solution: `const int MAXN = 100001;
+    solution: `#ifndef MAXN
+#define MAXN 100001
+#endif
 
 struct Point {
     long long x, y;
@@ -1876,6 +2482,19 @@ void grahamScan() {
         name: "일직선 점들",
         harness: `#include <cstdio>\n%USER_CODE%\nint main() {\n    n = 3;\n    pts[0] = {0,0}; pts[1] = {1,0}; pts[2] = {2,0};\n    grahamScan();\n    printf("%d\\n", hullSz);\n    return 0;\n}`,
         expected: "2\n"
+      },
+      {
+        name: "일직선 위의 점들 (많은 점)",
+        harness: `#include <cstdio>\n%USER_CODE%\nint main() {\n    n = 10;\n    for (int i = 0; i < 10; i++) { pts[i].x = i * 3; pts[i].y = i * 7; }\n    grahamScan();\n    printf("%d\\n", hullSz);\n    return 0;\n}`,
+        expected: "2\n"
+      },
+      {
+        name: "성능: N=100,000 랜덤 점",
+        tier: "performance",
+        size: 100000,
+        timeout: 5000,
+        harness: `#include <cstdio>\n#include <ctime>\n#define MAXN 100001\n%USER_CODE%\nint main() {\n    unsigned int rng = 42;\n    n = 100000;\n    for (int i = 0; i < n; i++) {\n        rng = rng * 1664525u + 1013904223u;\n        pts[i].x = (long long)(rng % 1000000000u);\n        rng = rng * 1664525u + 1013904223u;\n        pts[i].y = (long long)(rng % 1000000000u);\n    }\n    clock_t t0 = clock();\n    grahamScan();\n    clock_t t1 = clock();\n    double ms = (double)(t1 - t0) / CLOCKS_PER_SEC * 1000.0;\n    // verify hull is convex\n    bool ok = (hullSz >= 3);\n    for (int i = 0; i < hullSz && ok; i++) {\n        long long c = cross(hull[i], hull[(i+1)%hullSz], hull[(i+2)%hullSz]);\n        if (c < 0) ok = false;\n    }\n    if (ok) printf("PASS %.1f\\n", ms); else printf("FAIL not_convex\\n");\n    return 0;\n}`,
+        expected: "__PERF__"
       }
     ]
   },
@@ -1888,7 +2507,9 @@ void grahamScan() {
     skeleton: `// Trie (No STL)
 // insert(word), search(word), startsWith(prefix)
 
-const int MAXNODE = 1000001;
+#ifndef MAXNODE
+#define MAXNODE 1000001
+#endif
 const int ALPHA = 26;
 
 struct Trie {
@@ -1914,7 +2535,9 @@ struct Trie {
         return false;
     }
 };`,
-    solution: `const int MAXNODE = 1000001;
+    solution: `#ifndef MAXNODE
+#define MAXNODE 1000001
+#endif
 const int ALPHA = 26;
 
 struct Trie {
@@ -1974,6 +2597,19 @@ struct Trie {
         name: "빈 트라이 검색",
         harness: `#include <cstdio>\n%USER_CODE%\nint main() {\n    Trie t;\n    t.init();\n    printf("%d\\n", t.search("abc"));\n    printf("%d\\n", t.startsWith(""));\n    t.insert("hello");\n    printf("%d\\n", t.search("hello"));\n    printf("%d\\n", t.search("hell"));\n    return 0;\n}`,
         expected: "0\n1\n1\n0\n"
+      },
+      {
+        name: "존재하지 않는 접두사 검색",
+        harness: `#include <cstdio>\n%USER_CODE%\nint main() {\n    Trie t;\n    t.init();\n    t.insert("abc");\n    t.insert("abd");\n    t.insert("xyz");\n    printf("%d\\n", t.startsWith("abz"));\n    printf("%d\\n", t.startsWith("xyza"));\n    printf("%d\\n", t.search("ab"));\n    printf("%d\\n", t.startsWith("ab"));\n    printf("%d\\n", t.startsWith("q"));\n    printf("%d\\n", t.search(""));\n    printf("%d\\n", t.startsWith(""));\n    return 0;\n}`,
+        expected: "0\n0\n0\n1\n0\n0\n1\n"
+      },
+      {
+        name: "성능: 100,000 insert+search",
+        tier: "performance",
+        size: 100000,
+        timeout: 5000,
+        harness: `#include <cstdio>\n#include <ctime>\n#define MAXNODE 1000001\n%USER_CODE%\nint main() {\n    unsigned int rng = 42;\n    int N = 100000;\n    Trie t;\n    t.init();\n    char buf[12];\n    clock_t t0 = clock();\n    for (int i = 0; i < N; i++) {\n        int len = 5 + (int)(rng % 6u);\n        rng = rng * 1664525u + 1013904223u;\n        for (int j = 0; j < len; j++) {\n            rng = rng * 1664525u + 1013904223u;\n            buf[j] = 'a' + (char)(rng % 26u);\n        }\n        buf[len] = 0;\n        t.insert(buf);\n    }\n    int found = 0;\n    for (int i = 0; i < N; i++) {\n        int len = 5 + (int)(rng % 6u);\n        rng = rng * 1664525u + 1013904223u;\n        for (int j = 0; j < len; j++) {\n            rng = rng * 1664525u + 1013904223u;\n            buf[j] = 'a' + (char)(rng % 26u);\n        }\n        buf[len] = 0;\n        if (t.search(buf)) found++;\n        if (t.startsWith(buf)) found++;\n    }\n    clock_t t1 = clock();\n    double ms = (double)(t1 - t0) / CLOCKS_PER_SEC * 1000.0;\n    t.insert("testword");\n    bool ok = t.search("testword") && t.startsWith("test");\n    if (ok) printf("PASS %.1f\\n", ms); else printf("FAIL\\n");\n    return 0;\n}`,
+        expected: "__PERF__"
       }
     ]
   },
@@ -1985,8 +2621,12 @@ struct Trie {
     description: "Dinic 알고리즘으로 최대 유량. O(V²E)",
     skeleton: `// Dinic's Max Flow (No STL)
 
-const int MAXN = 1001;
-const int MAXE = 20001;
+#ifndef MAXN
+#define MAXN 1001
+#endif
+#ifndef MAXE
+#define MAXE 20001
+#endif
 const int INF = 0x3f3f3f3f;
 
 struct Edge {
@@ -2020,8 +2660,12 @@ int maxFlow(int s, int t) {
     // TODO: Dinic 메인
     return 0;
 }`,
-    solution: `const int MAXN = 1001;
-const int MAXE = 20001;
+    solution: `#ifndef MAXN
+#define MAXN 1001
+#endif
+#ifndef MAXE
+#define MAXE 20001
+#endif
 const int INF = 0x3f3f3f3f;
 
 struct Edge {
@@ -2104,6 +2748,19 @@ int maxFlow(int s, int t) {
         name: "병렬 경로",
         harness: `#include <cstdio>\n%USER_CODE%\nint main() {\n    init(2);\n    addEdge(0,1,3); addEdge(0,1,4);\n    printf("%d\\n", maxFlow(0, 1));\n    return 0;\n}`,
         expected: "7\n"
+      },
+      {
+        name: "직접 연결 (source→sink 단일 간선)",
+        harness: `#include <cstdio>\n%USER_CODE%\nint main() {\n    init(2);\n    addEdge(0, 1, 42);\n    printf("%d\\n", maxFlow(0, 1));\n    return 0;\n}`,
+        expected: "42\n"
+      },
+      {
+        name: "성능: V=500 E=2000 random",
+        tier: "performance",
+        size: 500,
+        timeout: 15000,
+        harness: `#include <cstdio>\n#include <ctime>\n#define MAXN 1001\n#define MAXE 20001\n%USER_CODE%\nunsigned int _rng = 42;\nunsigned int _lcg() { _rng = _rng * 1664525u + 1013904223u; return _rng; }\nint main() {\n    int N = 500, E = 2000;\n    int S = 0, T = N - 1;\n    init(N);\n    for (int i = 0; i < N - 1; i++) addEdge(i, i + 1, (int)(_lcg() % 100) + 1);\n    for (int i = 0; i < E - (N - 1); i++) {\n        int u = (int)(_lcg() % N);\n        int v = (int)(_lcg() % N);\n        if (u == v) v = (u + 1) % N;\n        int c = (int)(_lcg() % 100) + 1;\n        addEdge(u, v, c);\n    }\n    clock_t t0 = clock();\n    int flow = maxFlow(S, T);\n    clock_t t1 = clock();\n    bool ok = (flow >= 0);\n    double ms = (double)(t1 - t0) / CLOCKS_PER_SEC * 1000.0;\n    if (ok) printf("PASS %.1f\\n", ms); else printf("FAIL flow_invalid\\n");\n    return 0;\n}`,
+        expected: "__PERF__"
       }
     ]
   },
@@ -2118,7 +2775,9 @@ int maxFlow(int s, int t) {
 // dp[i][j] = min cost to merge interval [i, j]
 // opt[i][j] = optimal split point
 
-const int MAXN = 5001;
+#ifndef MAXN
+#define MAXN 5001
+#endif
 typedef long long ll;
 
 ll dp[MAXN][MAXN];
@@ -2131,7 +2790,9 @@ void solve() {
     // TODO: Knuth 최적화 DP 구현
     // 핵심: opt[i][j-1] <= opt[i][j] <= opt[i+1][j]
 }`,
-    solution: `const int MAXN = 5001;
+    solution: `#ifndef MAXN
+#define MAXN 5001
+#endif
 typedef long long ll;
 
 ll dp[MAXN][MAXN];
@@ -2186,6 +2847,19 @@ void solve() {
         name: "동일 크기 파일 3개",
         harness: `#include <cstdio>\n%USER_CODE%\nint main() {\n    n = 3;\n    int a[] = {10, 10, 10};\n    prefix[0] = 0;\n    for (int i = 0; i < n; i++) prefix[i+1] = prefix[i] + a[i];\n    solve();\n    printf("%lld\\n", dp[0][2]);\n    return 0;\n}`,
         expected: "50\n"
+      },
+      {
+        name: "n=2 최소 입력",
+        harness: `#include <cstdio>\n%USER_CODE%\nint main() {\n    n = 2;\n    int a[] = {1, 1};\n    prefix[0] = 0;\n    for (int i = 0; i < n; i++) prefix[i+1] = prefix[i] + a[i];\n    solve();\n    printf("%lld\\n", dp[0][1]);\n    printf("%lld\\n", dp[0][0]);\n    printf("%lld\\n", dp[1][1]);\n    return 0;\n}`,
+        expected: "2\n0\n0\n"
+      },
+      {
+        name: "성능: N=3,000",
+        tier: "performance",
+        size: 3000,
+        timeout: 10000,
+        harness: `#include <cstdio>\n#include <ctime>\n#define MAXN 3001\n%USER_CODE%\nint main() {\n    unsigned int rng = 42;\n    n = 3000;\n    prefix[0] = 0;\n    for (int i = 0; i < n; i++) {\n        rng = rng * 1664525u + 1013904223u;\n        int val = 1 + (int)(rng % 1000u);\n        prefix[i + 1] = prefix[i] + val;\n    }\n    clock_t t0 = clock();\n    solve();\n    clock_t t1 = clock();\n    double ms = (double)(t1 - t0) / CLOCKS_PER_SEC * 1000.0;\n    bool ok = (dp[0][n - 1] > 0);\n    // verify opt monotonicity: opt[i][j] <= opt[i][j+1] for sampled i\n    for (int i = 0; i < 10 && ok; i++) {\n        for (int j = i + 2; j < n && ok; j++) {\n            if (opt[i][j-1] > opt[i][j]) ok = false;\n        }\n    }\n    if (ok) printf("PASS %.1f\\n", ms); else printf("FAIL\\n");\n    return 0;\n}`,
+        expected: "__PERF__"
       }
     ]
   },
@@ -2198,7 +2872,9 @@ void solve() {
     skeleton: `// Deque - Double-Ended Queue (No STL)
 // pushFront, pushBack, popFront, popBack, front, back, empty, size
 
-const int MAXN = 200002;
+#ifndef MAXN
+#define MAXN 200002
+#endif
 
 struct Deque {
     int data[MAXN];
@@ -2244,7 +2920,9 @@ struct Deque {
         // TODO
     }
 };`,
-    solution: `const int MAXN = 200002;
+    solution: `#ifndef MAXN
+#define MAXN 200002
+#endif
 
 struct Deque {
     int data[MAXN];
@@ -2291,6 +2969,119 @@ struct Deque {
         name: "앞뒤 교차 삽입",
         harness: `#include <cstdio>\n%USER_CODE%\nint main() {\n    Deque dq;\n    dq.init();\n    dq.pushFront(3); dq.pushBack(4); dq.pushFront(2); dq.pushBack(5); dq.pushFront(1);\n    while (!dq.empty()) { printf("%d ", dq.front()); dq.popFront(); }\n    printf("\\n");\n    return 0;\n}`,
         expected: "1 2 3 4 5 \n"
+      },
+      {
+        name: "push/pop 후 empty",
+        harness: `#include <cstdio>
+%USER_CODE%
+int main() {
+    Deque dq;
+    dq.init();
+    dq.pushFront(10);
+    dq.pushBack(20);
+    printf("%d %d\n", dq.front(), dq.back());
+    dq.popFront();
+    dq.popBack();
+    printf("%d\n", dq.empty());
+    return 0;
+}`,
+        expected: "10 20\n1\n"
+      },
+      {
+        name: "한쪽만 push, 반대쪽에서 pop",
+        harness: `#include <cstdio>
+%USER_CODE%
+int main() {
+    Deque dq;
+    dq.init();
+    dq.pushBack(1); dq.pushBack(2); dq.pushBack(3);
+    printf("%d\n", dq.back()); dq.popBack();
+    printf("%d\n", dq.front()); dq.popFront();
+    printf("%d %d\n", dq.front(), dq.size());
+    return 0;
+}`,
+        expected: "3\n1\n2 1\n"
+      },
+      {
+        name: "성능: n=10,000",
+        tier: "performance",
+        size: 10000,
+        timeout: 5000,
+        harness: `#include <cstdio>
+#include <ctime>
+#define MAXN 20002
+%USER_CODE%
+int main() {
+    Deque dq;
+    dq.init();
+    int nn = 10000;
+    clock_t t0 = clock();
+    for (int i = 0; i < nn; i++) {
+        if (i % 2 == 0) dq.pushBack(i);
+        else dq.pushFront(i);
+    }
+    long long sum = 0;
+    while (!dq.empty()) { sum += dq.front(); dq.popFront(); }
+    clock_t t1 = clock();
+    double ms = (double)(t1 - t0) / CLOCKS_PER_SEC * 1000.0;
+    if (dq.empty() && sum == (long long)(nn - 1) * nn / 2) printf("PASS %.1f\n", ms); else printf("FAIL sum_mismatch\n");
+    return 0;
+}`,
+        expected: "__PERF__"
+      },
+      {
+        name: "성능: n=1,000,000",
+        tier: "performance",
+        size: 1000000,
+        timeout: 10000,
+        harness: `#include <cstdio>
+#include <ctime>
+#define MAXN 2000002
+%USER_CODE%
+int main() {
+    Deque dq;
+    dq.init();
+    int nn = 1000000;
+    clock_t t0 = clock();
+    for (int i = 0; i < nn; i++) {
+        if (i % 2 == 0) dq.pushBack(i);
+        else dq.pushFront(i);
+    }
+    long long sum = 0;
+    while (!dq.empty()) { sum += dq.front(); dq.popFront(); }
+    clock_t t1 = clock();
+    double ms = (double)(t1 - t0) / CLOCKS_PER_SEC * 1000.0;
+    if (dq.empty() && sum == (long long)(nn - 1) * nn / 2) printf("PASS %.1f\n", ms); else printf("FAIL sum_mismatch\n");
+    return 0;
+}`,
+        expected: "__PERF__"
+      },
+      {
+        name: "성능: n=10,000,000",
+        tier: "performance",
+        size: 10000000,
+        timeout: 30000,
+        harness: `#include <cstdio>
+#include <ctime>
+#define MAXN 20000002
+%USER_CODE%
+int main() {
+    Deque dq;
+    dq.init();
+    int nn = 10000000;
+    clock_t t0 = clock();
+    for (int i = 0; i < nn; i++) {
+        if (i % 2 == 0) dq.pushBack(i);
+        else dq.pushFront(i);
+    }
+    long long sum = 0;
+    while (!dq.empty()) { sum += dq.front(); dq.popFront(); }
+    clock_t t1 = clock();
+    double ms = (double)(t1 - t0) / CLOCKS_PER_SEC * 1000.0;
+    if (dq.empty() && sum == (long long)(nn - 1) * nn / 2) printf("PASS %.1f\n", ms); else printf("FAIL sum_mismatch\n");
+    return 0;
+}`,
+        expected: "__PERF__"
       }
     ]
   },
@@ -2303,7 +3094,9 @@ struct Deque {
     skeleton: `// Or-opt Algorithm for TSP (No STL)
 // tour[] 배열에서 연속 segment를 떼어 다른 위치에 삽입하여 경로 개선
 
-const int MAXN = 1001;
+#ifndef MAXN
+#define MAXN 1001
+#endif
 
 double x[MAXN], y[MAXN];
 int tour[MAXN];
@@ -2333,7 +3126,9 @@ bool orOptStep(int segLen) {
 void orOpt() {
     // TODO: segLen = 3, 2, 1 순서로 반복 개선
 }`,
-    solution: `const int MAXN = 1001;
+    solution: `#ifndef MAXN
+#define MAXN 1001
+#endif
 
 double x[MAXN], y[MAXN];
 int tour[MAXN];
@@ -2444,6 +3239,19 @@ void orOpt() {
         name: "이미 최적 삼각형",
         harness: `#include <cstdio>\n%USER_CODE%\nint main() {\n    n = 3;\n    x[0]=0; y[0]=0; x[1]=1; y[1]=0; x[2]=0.5; y[2]=1;\n    tour[0]=0; tour[1]=1; tour[2]=2;\n    double before = tourLength();\n    orOpt();\n    double after = tourLength();\n    double diff = before - after;\n    if (diff < 0) diff = -diff;\n    printf("%s\\n", diff < 1e-6 ? "OK" : "FAIL");\n    return 0;\n}`,
         expected: "OK\n"
+      },
+      {
+        name: "3점 직선 (최소 의미 있는 경로)",
+        harness: `#include <cstdio>\n%USER_CODE%\nint main() {\n    n = 3;\n    x[0]=0; y[0]=0; x[1]=5; y[1]=0; x[2]=10; y[2]=0;\n    tour[0]=0; tour[1]=1; tour[2]=2;\n    double before = tourLength();\n    orOpt();\n    double after = tourLength();\n    // 3점은 어떤 순서든 동일 (원형이므로)\n    double diff = before - after;\n    if (diff < 0) diff = -diff;\n    printf("%s\\n", diff < 1e-6 ? "OK" : "FAIL");\n    // 모든 도시 방문 확인\n    bool visited[3] = {false};\n    for (int i = 0; i < 3; i++) visited[tour[i]] = true;\n    bool all = visited[0] && visited[1] && visited[2];\n    printf("%s\\n", all ? "OK" : "FAIL");\n    return 0;\n}`,
+        expected: "OK\nOK\n"
+      },
+      {
+        name: "성능: N=5000 Or-opt",
+        tier: "performance",
+        size: 5000,
+        timeout: 60000,
+        harness: `#include <cstdio>\n#include <ctime>\n#define MAXN 5001\n%USER_CODE%\nunsigned int _rng = 42;\nunsigned int _lcg() { _rng = _rng * 1664525u + 1013904223u; return _rng; }\nint main() {\n    n = 5000;\n    for (int i = 0; i < n; i++) {\n        x[i] = (double)(_lcg() % 100000) / 100.0;\n        y[i] = (double)(_lcg() % 100000) / 100.0;\n    }\n    // Greedy nearest-neighbor initial tour\n    bool used[5001] = {false};\n    tour[0] = 0; used[0] = true;\n    for (int i = 1; i < n; i++) {\n        int best = -1; double bestD = 1e18;\n        for (int j = 0; j < n; j++) {\n            if (!used[j]) {\n                double dx = x[tour[i-1]] - x[j], dy = y[tour[i-1]] - y[j];\n                double d = dx*dx + dy*dy;\n                if (d < bestD) { bestD = d; best = j; }\n            }\n        }\n        tour[i] = best; used[best] = true;\n    }\n    double greedy = tourLength();\n    clock_t t0 = clock();\n    orOpt();\n    clock_t t1 = clock();\n    double ms = (double)(t1 - t0) / CLOCKS_PER_SEC * 1000.0;\n    double after = tourLength();\n    // Verify: tour visits all cities\n    bool v[5001] = {false};\n    bool ok = true;\n    for (int i = 0; i < n; i++) {\n        if (tour[i] < 0 || tour[i] >= n || v[tour[i]]) { ok = false; break; }\n        v[tour[i]] = true;\n    }\n    if (!ok) { printf("FAIL invalid_tour\\n"); return 0; }\n    if (after > greedy + 1e-6) { printf("FAIL tour_got_worse\\n"); return 0; }\n    printf("PASS %.1f\\n", ms);\n    return 0;\n}`,
+        expected: "__PERF__"
       }
     ]
   }

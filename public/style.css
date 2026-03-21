@@ -797,3 +797,48 @@ body {
 ::-webkit-scrollbar-thumb:hover {
     background: var(--text-muted);
 }
+
+/* ─── Performance badges ─── */
+.test-section-title {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin: 12px 0 6px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid var(--border);
+}
+
+.perf-size {
+    display: inline-block;
+    font-size: 11px;
+    padding: 1px 6px;
+    border-radius: 3px;
+    background: var(--bg-tertiary);
+    color: var(--accent);
+    margin-left: 6px;
+    font-family: 'JetBrains Mono', monospace;
+}
+
+.perf-time {
+    display: inline-block;
+    font-size: 11px;
+    padding: 1px 6px;
+    border-radius: 3px;
+    margin-left: 4px;
+    font-weight: 600;
+    font-family: 'JetBrains Mono', monospace;
+}
+
+.perf-time.time-fast {
+    background: rgba(63, 185, 80, 0.15);
+    color: var(--green);
+}
+
+.perf-time.time-mid {
+    background: rgba(210, 153, 34, 0.15);
+    color: var(--orange);
+}
+
+.perf-time.time-slow {
+    background: rgba(248, 81, 73, 0.15);
+    color: var(--red);
+}

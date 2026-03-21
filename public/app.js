@@ -295,6 +295,19 @@ async function requestVerify() {
     }
 }
 
+function formatSize(n) {
+    if (n >= 100000000) return (n / 1000000) + 'M';
+    if (n >= 1000000) return (n / 1000000) + 'M';
+    if (n >= 1000) return (n / 1000) + 'K';
+    return '' + n;
+}
+
+function timingClass(ms) {
+    if (ms < 1000) return 'time-fast';
+    if (ms < 5000) return 'time-mid';
+    return 'time-slow';
+}
+
 function renderVerifyResult(data) {
     const el = document.getElementById('verify-result');
     const scoreClass = data.score >= 80 ? 'pass' : data.score >= 50 ? 'partial' : 'fail';
@@ -310,9 +323,13 @@ function renderVerifyResult(data) {
         html += `<div class="compile-error"><h3>컴파일 에러</h3><pre>${escapeHtml(data.compileError)}</pre></div>`;
     }
 
-    if (data.testResults && data.testResults.length > 0) {
-        html += `<div class="test-results">`;
-        data.testResults.forEach(t => {
+    // 정확성 테스트와 성능 테스트 분리
+    const correctnessTests = (data.testResults || []).filter(t => t.tier !== 'performance');
+    const perfTests = (data.testResults || []).filter(t => t.tier === 'performance');
+
+    if (correctnessTests.length > 0) {
+        html += `<div class="test-results"><h3 class="test-section-title">정확성 테스트</h3>`;
+        correctnessTests.forEach(t => {
             const icon = t.passed ? '✓' : '✗';
             const cls = t.passed ? 'passed' : 'failed';
             html += `<div class="test-case ${cls}">
@@ -326,6 +343,25 @@ function renderVerifyResult(data) {
                         <div><span class="diff-label">실제:</span><pre>${escapeHtml(t.actual || '(출력 없음)')}</pre></div>
                     </div>`;
                 }
+            }
+            html += `</div>`;
+        });
+        html += `</div>`;
+    }
+
+    if (perfTests.length > 0) {
+        html += `<div class="test-results"><h3 class="test-section-title">성능 테스트</h3>`;
+        perfTests.forEach(t => {
+            const icon = t.passed ? '✓' : '✗';
+            const cls = t.passed ? 'passed' : 'failed';
+            const sizeBadge = t.size ? `<span class="perf-size">n=${formatSize(t.size)}</span>` : '';
+            const timeBadge = (t.passed && t.timeMs != null)
+                ? `<span class="perf-time ${timingClass(t.timeMs)}">${t.timeMs.toFixed(0)}ms</span>`
+                : '';
+            html += `<div class="test-case ${cls}">
+                <div class="test-case-header"><span class="test-icon">${icon}</span> ${escapeHtml(t.name)} ${sizeBadge} ${timeBadge}</div>`;
+            if (!t.passed && t.error) {
+                html += `<div class="test-diff"><pre>${escapeHtml(t.error)}</pre></div>`;
             }
             html += `</div>`;
         });

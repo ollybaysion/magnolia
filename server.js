@@ -120,7 +120,8 @@ app.post('/api/verify', async (req, res) => {
 
   for (const tc of algo.testCases) {
     const source = tc.harness.replace('%USER_CODE%', code);
-    const result = await runCpp(source);
+    const timeout = tc.timeout || 5000;
+    const result = await runCpp(source, timeout);
 
     if (!result.ok) {
       if (result.stage === 'compile') {
@@ -130,16 +131,36 @@ app.post('/api/verify', async (req, res) => {
       testResults.push({
         name: tc.name,
         passed: false,
-        expected: tc.expected.trim(),
+        tier: tc.tier || 'correctness',
+        size: tc.size || null,
+        expected: tc.tier === 'performance' ? null : (tc.expected || '').trim(),
         actual: null,
         error: result.error
       });
+    } else if (tc.tier === 'performance') {
+      // 성능 테스트: stdout = "PASS 1234.5" or "FAIL reason"
+      const stdout = result.stdout.trim();
+      if (stdout.startsWith('PASS')) {
+        const timeMs = parseFloat(stdout.split(' ')[1]);
+        testResults.push({
+          name: tc.name, passed: true,
+          tier: 'performance', size: tc.size || null,
+          timeMs
+        });
+      } else {
+        testResults.push({
+          name: tc.name, passed: false,
+          tier: 'performance', size: tc.size || null,
+          error: stdout.startsWith('FAIL') ? stdout.slice(5) : stdout
+        });
+      }
     } else {
       const actual = result.stdout.trim();
       const expected = tc.expected.trim();
       testResults.push({
         name: tc.name,
         passed: actual === expected,
+        tier: 'correctness',
         expected,
         actual
       });
