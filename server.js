@@ -119,7 +119,13 @@ app.post('/api/verify', async (req, res) => {
   let compileError = null;
 
   for (const tc of algo.testCases) {
-    const source = tc.harness.replace('%USER_CODE%', code);
+    // 성능 테스트: 하네스가 #define MAXN을 먼저 정의하므로
+    // 유저 코드의 const int MAX* 선언을 #ifndef 패턴으로 변환
+    let userCode = code;
+    if (tc.tier === 'performance') {
+      userCode = code.replace(/const int (MAX\w+)\s*=\s*(\d+);/g, '#ifndef $1\n#define $1 $2\n#endif');
+    }
+    const source = tc.harness.replace('%USER_CODE%', userCode);
     const timeout = tc.timeout || 5000;
     const result = await runCpp(source, timeout);
 
